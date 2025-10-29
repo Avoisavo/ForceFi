@@ -1,5 +1,6 @@
 import Header from '../components/Header';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLinera } from '../contexts/LineraContext';
 import { lineraAdapter } from '../lib/linera-adapter';
 
@@ -16,6 +17,7 @@ interface Market {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { isConnected } = useLinera();
   const [markets] = useState<Market[]>([
     {
@@ -52,17 +54,18 @@ export default function Dashboard() {
     }
   ]);
 
-  const [selectedBets, setSelectedBets] = useState<{[key: number]: string}>({});
-  const [betAmounts, setBetAmounts] = useState<{[key: number]: number}>({});
-  const [loading, setLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  const handleBet = (marketId: number, option: string) => {
-    setSelectedBets({...selectedBets, [marketId]: option});
-  };
-
-  const handleAmountChange = (marketId: number, amount: number) => {
-    setBetAmounts({...betAmounts, [marketId]: amount});
+  const handleBet = (market: Market, option: { name: string; odds: number; color: string }) => {
+    // Navigate to bet page with market details
+    const params = new URLSearchParams({
+      marketId: market.id.toString(),
+      question: market.question,
+      option: option.name,
+      odds: option.odds.toString(),
+      color: option.color,
+      pool: market.totalPool.toString(),
+      endTime: market.endTime
+    });
+    navigate(`/bet?${params.toString()}`);
   };
 
   // Example: Load markets from Linera (if you have a query endpoint)
@@ -86,65 +89,6 @@ export default function Dashboard() {
     loadMarketsFromLinera();
   }, [isConnected]);
 
-  const placeBet = async (marketId: number) => {
-    if (!isConnected) {
-      alert('⚠️ Please connect your wallet first!');
-      return;
-    }
-
-    const selectedOption = selectedBets[marketId];
-    const amount = betAmounts[marketId] || 100;
-
-    if (!selectedOption) {
-      alert('⚠️ Please select an option first!');
-      return;
-    }
-
-    setLoading(true);
-    setSuccessMessage(null);
-
-    try {
-      // Example mutation - adjust based on your Linera application's schema
-      // This is a placeholder - you'll need to implement your actual Linera betting contract
-      console.log('🎯 Placing bet:', { marketId, selectedOption, amount });
-      
-      if (lineraAdapter.isApplicationSet()) {
-        // Example mutation call
-        // await lineraAdapter.mutateApplication({
-        //   mutation: `mutation {
-        //     placeBet(marketId: ${marketId}, option: "${selectedOption}", amount: ${amount}) {
-        //       success
-        //       transactionId
-        //     }
-        //   }`
-        // });
-        
-        setSuccessMessage(`✅ Bet placed: ${amount} on ${selectedOption}!`);
-        setTimeout(() => setSuccessMessage(null), 5000);
-      } else {
-        // Simulate bet placement without Linera app
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        setSuccessMessage(`🎮 Demo mode: Bet of ${amount} on ${selectedOption} recorded!`);
-        setTimeout(() => setSuccessMessage(null), 5000);
-      }
-      
-      // Clear selection after successful bet
-      const newSelectedBets = {...selectedBets};
-      delete newSelectedBets[marketId];
-      setSelectedBets(newSelectedBets);
-      
-      const newBetAmounts = {...betAmounts};
-      delete newBetAmounts[marketId];
-      setBetAmounts(newBetAmounts);
-      
-    } catch (error) {
-      console.error('Failed to place bet:', error);
-      alert('❌ Failed to place bet. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div style={{
       minHeight: '100vh',
@@ -152,63 +96,39 @@ export default function Dashboard() {
       flexDirection: 'column',
       margin: 0,
       padding: 0,
-      background: 'linear-gradient(135deg, #1a0033 0%, #0a1428 50%, #001a33 100%)',
+      background: '#0f1419',
     }}>
       <Header />
       
       {/* Hero Section */}
       <div style={{
-        padding: '3rem 2rem',
-        textAlign: 'center',
-        background: 'linear-gradient(180deg, rgba(255,0,255,0.1) 0%, transparent 100%)',
-        borderBottom: '2px solid #ff00ff'
+        padding: '2.5rem 2rem',
+        background: 'linear-gradient(180deg, #1a1f2e 0%, #0f1419 100%)',
+        borderBottom: '1px solid rgba(255,255,255,0.1)'
       }}>
-        <h1 style={{
-          fontSize: '3.5rem',
-          fontWeight: 'bold',
-          background: 'linear-gradient(90deg, #ff00ff, #00ffff, #ffff00)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          textShadow: '0 0 30px rgba(255,0,255,0.5)',
-          marginBottom: '1rem',
-          fontFamily: 'monospace'
-        }}>
-          🎮 PREDICTION ARCADE 🎮
-        </h1>
-        <p style={{
-          fontSize: '1.2rem',
-          color: '#00ffff',
-          textShadow: '0 0 10px rgba(0,255,255,0.5)'
-        }}>
-          Place your bets • Win big • Level up
-        </p>
-        
+        <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: '600',
+            color: '#ffffff',
+            marginBottom: '0.5rem',
+            letterSpacing: '-0.02em'
+          }}>
+            Prediction Markets
+          </h1>
+          <p style={{
+            fontSize: '1rem',
+            color: 'rgba(255,255,255,0.6)',
+            fontWeight: '400'
+          }}>
+            Trade on the outcome of future events
+          </p>
+        </div>
       </div>
       
-      {/* Success Message */}
-      {successMessage && (
-        <div style={{
-          position: 'fixed',
-          top: '100px',
-          right: '20px',
-          background: 'linear-gradient(135deg, rgba(0,255,136,0.9), rgba(0,221,255,0.9))',
-          border: '2px solid #00ff88',
-          borderRadius: '10px',
-          padding: '1rem 1.5rem',
-          color: 'white',
-          fontWeight: 'bold',
-          maxWidth: '350px',
-          boxShadow: '0 0 30px rgba(0,255,136,0.5)',
-          zIndex: 1000,
-          animation: 'slideIn 0.3s ease-out'
-        }}>
-          {successMessage}
-        </div>
-      )}
-
       <main style={{ 
         flex: 1,
-        padding: '3rem 2rem',
+        padding: '2rem',
         width: '100%',
         maxWidth: '1400px',
         margin: '0 auto'
@@ -216,47 +136,34 @@ export default function Dashboard() {
         {/* Markets Grid */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-          gap: '2rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
+          gap: '1.5rem',
           marginBottom: '2rem'
         }}>
           {markets.map((market) => (
             <div key={market.id} style={{
-              background: 'rgba(0,0,0,0.6)',
-              border: '3px solid #ff00ff',
-              borderRadius: '15px',
+              background: '#1a1f2e',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '12px',
               padding: '1.5rem',
-              boxShadow: '0 0 20px rgba(255,0,255,0.3), inset 0 0 20px rgba(0,255,255,0.1)',
-              transition: 'transform 0.2s, box-shadow 0.2s',
-              cursor: 'pointer',
-              position: 'relative',
-              overflow: 'hidden'
+              transition: 'all 0.2s ease',
+              cursor: 'pointer'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-5px)';
-              e.currentTarget.style.boxShadow = '0 5px 30px rgba(255,0,255,0.6)';
+              e.currentTarget.style.borderColor = 'rgba(59,130,246,0.5)';
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 0 20px rgba(255,0,255,0.3)';
+              e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.boxShadow = 'none';
             }}>
-              {/* Arcade Corner Decoration */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: '40px',
-                height: '40px',
-                background: 'linear-gradient(135deg, #ff00ff, #00ffff)',
-                clipPath: 'polygon(100% 0, 0 0, 100% 100%)'
-              }}/>
               
               <h2 style={{
-                color: '#ffff00',
-                fontSize: '1.3rem',
+                color: '#ffffff',
+                fontSize: '1.125rem',
                 marginBottom: '1rem',
-                textShadow: '0 0 10px rgba(255,255,0,0.5)',
-                fontFamily: 'monospace'
+                fontWeight: '600',
+                lineHeight: '1.5'
               }}>
                 {market.question}
               </h2>
@@ -264,14 +171,18 @@ export default function Dashboard() {
               <div style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                marginBottom: '1.5rem',
-                fontSize: '0.9rem'
+                marginBottom: '1.25rem',
+                fontSize: '0.875rem',
+                color: 'rgba(255,255,255,0.5)'
               }}>
-                <span style={{ color: '#00ffff' }}>
-                  💰 Pool: ${market.totalPool.toLocaleString()}
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span>Volume</span>
+                  <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '500' }}>
+                    ${market.totalPool.toLocaleString()}
+                  </span>
                 </span>
-                <span style={{ color: '#ff00ff' }}>
-                  ⏰ {market.endTime}
+                <span>
+                  {market.endTime}
                 </span>
               </div>
 
@@ -279,143 +190,70 @@ export default function Dashboard() {
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1rem'
+                gap: '0.5rem'
               }}>
-                {market.options.map((option) => (
-                  <button
-                    key={option.name}
-                    onClick={() => handleBet(market.id, option.name)}
-                    style={{
-                      background: selectedBets[market.id] === option.name 
-                        ? `linear-gradient(135deg, ${option.color}, ${option.color}dd)`
-                        : 'rgba(255,255,255,0.1)',
-                      border: `2px solid ${option.color}`,
-                      borderRadius: '10px',
-                      padding: '1rem',
-                      color: 'white',
-                      fontSize: '1.1rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s',
-                      boxShadow: selectedBets[market.id] === option.name
-                        ? `0 0 20px ${option.color}`
-                        : 'none',
-                      fontFamily: 'monospace',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (selectedBets[market.id] !== option.name) {
-                        e.currentTarget.style.background = `linear-gradient(135deg, ${option.color}33, ${option.color}55)`;
-                        e.currentTarget.style.boxShadow = `0 0 15px ${option.color}66`;
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (selectedBets[market.id] !== option.name) {
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }
-                    }}
-                  >
-                    <span>{option.name}</span>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <span style={{
-                        fontSize: '0.9rem',
-                        color: option.color,
-                        textShadow: `0 0 5px ${option.color}`
-                      }}>
-                        {option.odds}%
-                      </span>
-                      {selectedBets[market.id] === option.name && (
-                        <span style={{ fontSize: '1.5rem' }}>✓</span>
-                      )}
-                    </div>
-                  </button>
-                ))}
+                {market.options.map((option) => {
+                  // Map colors to more professional ones
+                  const colorMap: {[key: string]: string} = {
+                    '#00ff88': '#10b981',
+                    '#ff0055': '#ef4444',
+                    '#00ddff': '#3b82f6',
+                    '#ffaa00': '#f59e0b',
+                    '#ff44aa': '#ec4899',
+                    '#aa00ff': '#8b5cf6'
+                  };
+                  const professionalColor = colorMap[option.color] || '#3b82f6';
+                  
+                  return (
+                    <button
+                      key={option.name}
+                      onClick={() => handleBet(market, option)}
+                      style={{
+                        background: '#0f1419',
+                        border: '1px solid rgba(255,255,255,0.15)',
+                        borderRadius: '8px',
+                        padding: '0.875rem 1rem',
+                        color: 'white',
+                        fontSize: '0.9375rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#1a1f2e';
+                        e.currentTarget.style.borderColor = professionalColor;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#0f1419';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                      }}
+                    >
+                      <span>{option.name}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <span style={{
+                          fontSize: '1rem',
+                          color: professionalColor,
+                          fontWeight: '600'
+                        }}>
+                          {option.odds}¢
+                        </span>
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ opacity: 0.5 }}>
+                          <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
-              {/* Bet Amount Input */}
-              {selectedBets[market.id] && (
-                <div style={{ marginTop: '1rem' }}>
-                  <label style={{
-                    display: 'block',
-                    color: '#00ffff',
-                    marginBottom: '0.5rem',
-                    fontSize: '0.9rem'
-                  }}>
-                    💰 Bet Amount:
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={betAmounts[market.id] || 100}
-                    onChange={(e) => handleAmountChange(market.id, parseInt(e.target.value) || 0)}
-                    style={{
-                      width: '100%',
-                      padding: '0.8rem',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: '2px solid #00ffff',
-                      borderRadius: '8px',
-                      color: 'white',
-                      fontSize: '1.1rem',
-                      fontFamily: 'monospace',
-                      marginBottom: '1rem'
-                    }}
-                  />
-                  <button 
-                    onClick={() => placeBet(market.id)}
-                    disabled={loading || !isConnected}
-                    style={{
-                      width: '100%',
-                      padding: '1rem',
-                      background: loading || !isConnected 
-                        ? 'rgba(128,128,128,0.5)' 
-                        : 'linear-gradient(135deg, #ff00ff, #00ffff)',
-                      border: 'none',
-                      borderRadius: '10px',
-                      color: 'white',
-                      fontSize: '1.2rem',
-                      fontWeight: 'bold',
-                      cursor: loading || !isConnected ? 'not-allowed' : 'pointer',
-                      textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                      boxShadow: loading || !isConnected 
-                        ? 'none' 
-                        : '0 0 20px rgba(255,0,255,0.6)',
-                      fontFamily: 'monospace',
-                      animation: loading ? 'none' : 'pulse 2s infinite',
-                      opacity: loading || !isConnected ? 0.6 : 1
-                    }}
-                  >
-                    {loading 
-                      ? '⏳ PLACING BET...' 
-                      : !isConnected 
-                        ? '🔒 CONNECT WALLET' 
-                        : `🎯 PLACE BET ON ${selectedBets[market.id]} 🎯`}
-                  </button>
-                </div>
-              )}
             </div>
           ))}
         </div>
       </main>
 
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.02); }
-        }
-        @keyframes slideIn {
-          from {
-            transform: translateX(400px);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-      `}</style>
     </div>
   );
 }

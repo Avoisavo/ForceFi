@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/dashboard';
+import Bet from './pages/bet';
 import Header from './components/Header';
 
 function HomePage() {
@@ -69,6 +70,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/hallo" element={<Dashboard />} />
+        <Route path="/bet" element={<Bet />} />
       </Routes>
     </BrowserRouter>
   );
