@@ -43,6 +43,45 @@ Through automated smart contract workflows, users can place bets, track outcomes
 - **async-graphql**: GraphQL server implementation for service queries
 - **Subgraphs**: Aggregating markets, liquidity, and odds across platforms
 
+## 🔌 Linera SDK & Protocol Features
+
+### State Management (Views)
+- **`RegisterView<u64>`**: Stores market ID counter
+- **`MapView<u64, Market>`**: Stores all prediction markets
+- **`MapView<PositionKey, u64>`**: Tracks user positions across markets
+- **`RootView`**: Automatic state persistence and loading
+
+```rust
+#[derive(RootView)]
+pub struct PredictionMarketState {
+    pub next_market_id: RegisterView<u64>,
+    pub markets: MapView<u64, Market>,
+    pub positions: MapView<PositionKey, u64>,
+}
+```
+
+### Contract Operations
+```rust
+#[derive(GraphQLMutationRoot)]
+pub enum Operation {
+    CreateMarket { question: String, outcomes: Vec<String> },
+    BuyShares { market_id: u64, outcome: usize, shares: u64 },
+    ResolveMarket { market_id: u64, winning_outcome: usize },
+}
+```
+
+### Key SDK Features Used
+- **Contract/Service Separation**: Contract handles state mutations, Service provides GraphQL queries
+- **BCS Serialization**: Binary encoding for operations and chain identity
+- **Runtime Context**: `runtime.chain_id()` for user identification, `runtime.application_parameters()` for validation
+- **async-graphql**: Native GraphQL support via `GraphQLMutationRoot` derive macro
+
+### Linera Benefits
+- Microchain-per-market isolation for parallel execution
+- No gas congestion or variable fees
+- Instant finality for bet placement and resolution
+- Gas-free GraphQL queries
+
 ## 🏗️ How we built it
 
 1. **Architecture design**: Defined the microchain-per-bet architecture to isolate each market for independent execution and scaling.
@@ -160,7 +199,7 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 ## 👥 Team
 
-Built with ❤️ by the ForceFi team
+Tan Zhi Wei (@zhiweavo )
 
 ---
 
