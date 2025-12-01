@@ -30,7 +30,7 @@ export default function Bet() {
   useEffect(() => {
     // Redirect to dashboard if no market data
     if (!marketId || !question || !selectedOption) {
-      navigate('/hallo');
+      navigate('/markets');
     }
   }, [marketId, question, selectedOption, navigate]);
 
@@ -78,7 +78,7 @@ export default function Bet() {
 
       // Redirect back to dashboard after 3 seconds
       setTimeout(() => {
-        navigate('/hallo');
+        navigate('/markets');
       }, 3000);
 
     } catch (error) {
@@ -92,23 +92,13 @@ export default function Bet() {
 
   const quickAmounts = [50, 100, 250, 500, 1000, 2500];
 
-  // Map colors to professional ones
-  const colorMap: {[key: string]: string} = {
-    '#00ff88': '#10b981',
-    '#ff0055': '#ef4444',
-    '#00ddff': '#3b82f6',
-    '#ffaa00': '#f59e0b',
-    '#ff44aa': '#ec4899',
-    '#aa00ff': '#8b5cf6'
-  };
-  const professionalColor = colorMap[optionColor] || '#3b82f6';
-
   return (
     <div style={{
       minHeight: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: '#0f1419',
+      background: '#0a0b0d',
+      fontFamily: "'Inter', sans-serif"
     }}>
       <Header />
 
@@ -164,12 +154,12 @@ export default function Bet() {
       }}>
         {/* Back Button */}
         <button
-          onClick={() => navigate('/hallo')}
+          onClick={() => navigate('/markets')}
           style={{
             background: 'transparent',
             border: 'none',
             padding: '0.5rem 0',
-            color: 'rgba(255,255,255,0.6)',
+            color: '#94a3b8',
             fontSize: '0.9375rem',
             fontWeight: '500',
             cursor: 'pointer',
@@ -183,64 +173,65 @@ export default function Bet() {
             e.currentTarget.style.color = '#ffffff';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'rgba(255,255,255,0.6)';
+            e.currentTarget.style.color = '#94a3b8';
           }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           Back to Markets
         </button>
 
         {/* Bet Card */}
         <div style={{
-          background: '#1a1f2e',
-          border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '12px',
+          background: '#13161b',
+          border: '1px solid rgba(255,255,255,0.05)',
+          borderRadius: '16px',
           padding: '2rem',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+          boxShadow: '0 4px 24px rgba(0,0,0,0.2)'
         }}>
           {/* Title */}
           <h1 style={{
             fontSize: '1.5rem',
             fontWeight: '600',
             color: '#ffffff',
-            marginBottom: '0.25rem',
+            marginBottom: '0.5rem',
             letterSpacing: '-0.01em'
           }}>
             Place Order
           </h1>
           <p style={{
             fontSize: '0.875rem',
-            color: 'rgba(255,255,255,0.5)',
-            marginBottom: '1.5rem'
+            color: '#94a3b8',
+            marginBottom: '2rem'
           }}>
             Review and confirm your position
           </p>
 
           {/* Market Question */}
           <div style={{
-            background: '#0f1419',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '8px',
-            padding: '1.25rem',
-            marginBottom: '1.5rem'
+            background: '#0a0b0d',
+            border: '1px solid rgba(255,255,255,0.05)',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            marginBottom: '2rem'
           }}>
             <div style={{
               fontSize: '0.75rem',
-              color: 'rgba(255,255,255,0.5)',
+              color: '#64748b',
               textTransform: 'uppercase',
               letterSpacing: '0.05em',
-              marginBottom: '0.5rem'
+              marginBottom: '0.75rem',
+              fontWeight: '600'
             }}>
               Market
             </div>
             <h2 style={{
               color: '#ffffff',
-              fontSize: '1.125rem',
-              marginBottom: '1rem',
+              fontSize: '1.25rem',
+              marginBottom: '1.25rem',
               fontWeight: '600',
-              lineHeight: '1.5'
+              lineHeight: '1.4'
             }}>
               {question}
             </h2>
@@ -250,10 +241,12 @@ export default function Bet() {
               fontSize: '0.875rem',
               flexWrap: 'wrap',
               gap: '1rem',
-              color: 'rgba(255,255,255,0.5)'
+              color: '#94a3b8',
+              borderTop: '1px solid rgba(255,255,255,0.05)',
+              paddingTop: '1rem'
             }}>
               <span>
-                Volume: <span style={{ color: 'rgba(255,255,255,0.7)', fontWeight: '500' }}>${totalPool.toLocaleString()}</span>
+                Volume: <span style={{ color: '#e2e8f0', fontWeight: '500' }}>${totalPool.toLocaleString()}</span>
               </span>
               <span>
                 Closes: {endTime}
@@ -263,12 +256,23 @@ export default function Bet() {
 
           {/* Selected Option Display */}
           <div style={{
-            background: '#0f1419',
-            border: `1px solid ${professionalColor}`,
-            borderRadius: '8px',
-            padding: '1.25rem',
-            marginBottom: '1.5rem'
+            background: '#0a0b0d',
+            border: `1px solid ${optionColor}`,
+            borderRadius: '12px',
+            padding: '1.5rem',
+            marginBottom: '2rem',
+            position: 'relative',
+            overflow: 'hidden'
           }}>
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              width: '4px',
+              background: optionColor
+            }} />
+
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -278,36 +282,38 @@ export default function Bet() {
             }}>
               <div>
                 <p style={{
-                  color: 'rgba(255,255,255,0.5)',
+                  color: '#64748b',
                   fontSize: '0.75rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  marginBottom: '0.5rem'
+                  marginBottom: '0.5rem',
+                  fontWeight: '600'
                 }}>
                   Outcome
                 </p>
                 <p style={{
                   color: 'white',
-                  fontSize: '1.25rem',
-                  fontWeight: '600'
+                  fontSize: '1.5rem',
+                  fontWeight: '700'
                 }}>
                   {selectedOption}
                 </p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{
-                  color: 'rgba(255,255,255,0.5)',
+                  color: '#64748b',
                   fontSize: '0.75rem',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
-                  marginBottom: '0.5rem'
+                  marginBottom: '0.5rem',
+                  fontWeight: '600'
                 }}>
                   Price
                 </p>
                 <p style={{
-                  color: professionalColor,
-                  fontSize: '1.25rem',
-                  fontWeight: '600'
+                  color: optionColor,
+                  fontSize: '1.5rem',
+                  fontWeight: '700'
                 }}>
                   {optionOdds}¢
                 </p>
@@ -316,49 +322,51 @@ export default function Bet() {
           </div>
 
           {/* Bet Amount Section */}
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div style={{ marginBottom: '2rem' }}>
             <label style={{
               display: 'block',
-              color: 'rgba(255,255,255,0.9)',
+              color: '#e2e8f0',
               fontSize: '0.875rem',
               fontWeight: '500',
-              marginBottom: '0.75rem'
+              marginBottom: '1rem'
             }}>
               Amount (USD)
             </label>
-            
+
             {/* Quick Amount Buttons */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '0.5rem',
-              marginBottom: '0.75rem'
+              gap: '0.75rem',
+              marginBottom: '1rem'
             }}>
               {quickAmounts.map(amount => (
                 <button
                   key={amount}
                   onClick={() => setBetAmount(amount)}
                   style={{
-                    background: betAmount === amount 
-                      ? professionalColor
-                      : '#0f1419',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    borderRadius: '6px',
-                    padding: '0.625rem',
+                    background: betAmount === amount
+                      ? optionColor
+                      : '#0a0b0d',
+                    border: betAmount === amount
+                      ? `1px solid ${optionColor}`
+                      : '1px solid rgba(255,255,255,0.05)',
+                    borderRadius: '8px',
+                    padding: '0.75rem',
                     color: 'white',
                     fontSize: '0.875rem',
-                    fontWeight: '500',
+                    fontWeight: '600',
                     cursor: 'pointer',
                     transition: 'all 0.2s'
                   }}
                   onMouseEnter={(e) => {
                     if (betAmount !== amount) {
-                      e.currentTarget.style.background = '#1a1f2e';
+                      e.currentTarget.style.background = '#1a1d24';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (betAmount !== amount) {
-                      e.currentTarget.style.background = '#0f1419';
+                      e.currentTarget.style.background = '#0a0b0d';
                     }
                   }}
                 >
@@ -375,33 +383,37 @@ export default function Bet() {
               onChange={(e) => setBetAmount(parseInt(e.target.value) || 0)}
               style={{
                 width: '100%',
-                padding: '0.875rem',
-                background: '#0f1419',
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: '6px',
+                padding: '1rem',
+                background: '#0a0b0d',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '8px',
                 color: 'white',
-                fontSize: '0.9375rem',
-                fontWeight: '500'
+                fontSize: '1rem',
+                fontWeight: '500',
+                outline: 'none',
+                transition: 'border-color 0.2s'
               }}
               placeholder="Enter custom amount"
+              onFocus={(e) => e.target.style.borderColor = optionColor}
+              onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
             />
           </div>
 
           {/* Potential Winnings Display */}
           <div style={{
-            background: '#0f1419',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '8px',
-            padding: '1.25rem',
-            marginBottom: '1.5rem'
+            background: 'rgba(16, 185, 129, 0.05)',
+            border: '1px solid rgba(16, 185, 129, 0.1)',
+            borderRadius: '12px',
+            padding: '1.5rem',
+            marginBottom: '2rem'
           }}>
             <div style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '0.75rem'
+              marginBottom: '1rem'
             }}>
-              <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem' }}>
+              <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
                 Max Payout
               </span>
               <span style={{
@@ -417,15 +429,15 @@ export default function Bet() {
               justifyContent: 'space-between',
               alignItems: 'center'
             }}>
-              <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.875rem' }}>
+              <span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
                 Potential Profit
               </span>
               <span style={{
-                color: profit > 0 ? '#10b981' : '#ef4444',
-                fontSize: '1.125rem',
-                fontWeight: '600'
+                color: '#10b981',
+                fontSize: '1.25rem',
+                fontWeight: '700'
               }}>
-                ${profit.toFixed(2)}
+                +${profit.toFixed(2)}
               </span>
             </div>
           </div>
@@ -436,34 +448,34 @@ export default function Bet() {
             disabled={loading || !isConnected || betAmount <= 0}
             style={{
               width: '100%',
-              padding: '1rem',
+              padding: '1.25rem',
               background: loading || !isConnected || betAmount <= 0
-                ? 'rgba(59,130,246,0.3)'
-                : professionalColor,
+                ? 'rgba(255,255,255,0.05)'
+                : optionColor,
               border: 'none',
-              borderRadius: '8px',
-              color: 'white',
-              fontSize: '0.9375rem',
+              borderRadius: '12px',
+              color: loading || !isConnected || betAmount <= 0 ? '#64748b' : 'white',
+              fontSize: '1rem',
               fontWeight: '600',
               cursor: loading || !isConnected || betAmount <= 0 ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s',
-              opacity: loading || !isConnected || betAmount <= 0 ? 0.5 : 1
+              opacity: loading ? 0.7 : 1
             }}
             onMouseEnter={(e) => {
               if (!loading && isConnected && betAmount > 0) {
-                e.currentTarget.style.opacity = '0.9';
+                e.currentTarget.style.filter = 'brightness(1.1)';
               }
             }}
             onMouseLeave={(e) => {
               if (!loading && isConnected && betAmount > 0) {
-                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.filter = 'none';
               }
             }}
           >
             {loading
               ? 'Placing Order...'
               : !isConnected
-                ? 'Place Bet'
+                ? 'Connect Wallet to Trade'
                 : betAmount <= 0
                   ? 'Enter Amount'
                   : `Place Order - $${betAmount}`}
@@ -472,10 +484,10 @@ export default function Bet() {
           {/* Info text */}
           {isConnected && betAmount > 0 && !loading && (
             <p style={{
-              color: 'rgba(255,255,255,0.5)',
-              fontSize: '0.8125rem',
+              color: '#64748b',
+              fontSize: '0.875rem',
               textAlign: 'center',
-              marginTop: '1rem'
+              marginTop: '1.5rem'
             }}>
               Transaction will be executed on Linera blockchain
             </p>

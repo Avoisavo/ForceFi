@@ -198,5 +198,3 @@ Tan Zhi Wei (@zhiweavo )
 ---
 
 **Note**: This project is currently in active development. Features and documentation may change.
-
-Hi
