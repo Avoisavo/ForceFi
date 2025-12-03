@@ -1,7 +1,69 @@
+import { useEffect, useState } from 'react';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+import { lineraAdapter } from '../lib/linera-adapter';
+
 export default function Header() {
-  // Hard-coded wallet address and balance
-  const WALLET_ADDRESS = '994f5f68464920468ca5c3d23a860a69ce0383f049c14cc9d803fd673113233e';
-  const WALLET_BALANCE = '945.00';
+  const { primaryWallet, handleLogOut, setShowAuthFlow } = useDynamicContext();
+  const [lineraBalance, setLineraBalance] = useState<string>('0.00');
+  const [lineraChainId, setLineraChainId] = useState<string>('');
+  const [isLineraConnected, setIsLineraConnected] = useState(false);
+
+  useEffect(() => {
+    const connectLinera = async () => {
+      if (primaryWallet) {
+        try {
+          // Connect to Linera Testnet
+          // Use the testnet faucet URL
+          const FAUCET_URL = "https://faucet.testnet-conway.linera.net";
+          const provider = await lineraAdapter.connect(primaryWallet, FAUCET_URL);
+          setIsLineraConnected(true);
+          setLineraChainId(provider.chainId);
+
+          // Fetch initial balance with retry logic
+          let balance = "0";
+          try {
+            balance = await lineraAdapter.client.balance();
+          } catch (e) {
+            console.warn("Failed to fetch initial balance, retrying in 1s...", e);
+            await new Promise(r => setTimeout(r, 1000));
+            try {
+              balance = await lineraAdapter.client.balance();
+            } catch (e2) {
+              console.error("Failed to fetch balance after retry:", e2);
+              // Continue with 0 balance rather than failing connection
+            }
+          }
+          setLineraBalance(balance.toString());
+
+        } catch (error) {
+          console.error("Failed to connect to Linera:", error);
+        }
+      } else {
+        setIsLineraConnected(false);
+        setLineraBalance('0.00');
+        setLineraChainId('');
+      }
+    };
+
+    connectLinera();
+  }, [primaryWallet]);
+
+  // Poll for balance updates
+  useEffect(() => {
+    if (!isLineraConnected) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const provider = lineraAdapter.getProvider();
+        const balance = await provider.client.balance();
+        setLineraBalance(balance.toString());
+      } catch (error) {
+        console.error("Failed to poll balance:", error);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isLineraConnected]);
 
   return (
     <header style={{
@@ -69,39 +131,89 @@ export default function Header() {
         </ul>
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <div style={{
-            padding: '0.5rem 1rem',
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: '8px',
-            color: '#e2e8f0',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            <span style={{ color: '#3b82f6' }}>💰</span> {WALLET_BALANCE} LINERA
-          </div>
-
-          <div style={{
-            padding: '0.5rem 1rem',
-            background: 'rgba(124, 58, 237, 0.1)',
-            border: '1px solid rgba(124, 58, 237, 0.2)',
-            borderRadius: '8px',
-            color: '#a78bfa',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981' }} />
-            {WALLET_ADDRESS.slice(0, 6)}...{WALLET_ADDRESS.slice(-4)}
-          </div>
+          {primaryWallet && isLineraConnected ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+              <div style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)', // bg-blue-500/10
+                border: '1px solid rgba(59, 130, 246, 0.3)', // border-blue-500/30
+                borderRadius: '0.5rem',
+                color: '#60a5fa', // text-blue-400
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                Dynamic: {primaryWallet.address.slice(0, 6)}...{primaryWallet.address.slice(-4)}
+              </div>
+              <div style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)', // bg-green-500/10
+                border: '1px solid rgba(34, 197, 94, 0.3)', // border-green-500/30
+                borderRadius: '0.5rem',
+                color: '#4ade80', // text-green-400
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                Linera Chain: {lineraChainId.slice(0, 6)}...
+              </div>
+              <div style={{
+                padding: '0.5rem 1rem',
+                backgroundColor: 'rgba(168, 85, 247, 0.1)', // bg-purple-500/10
+                border: '1px solid rgba(168, 85, 247, 0.3)', // border-purple-500/30
+                borderRadius: '0.5rem',
+                color: '#c084fc', // text-purple-400
+                fontFamily: 'monospace',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                Balance: {lineraBalance}
+              </div>
+              <button
+                onClick={handleLogOut}
+                style={{
+                  marginTop: '0.25rem',
+                  fontSize: '0.75rem',
+                  color: '#94a3b8',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline'
+                }}
+              >
+                Disconnect
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowAuthFlow(true)}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#7c3aed',
+                border: 'none',
+                borderRadius: '8px',
+                color: 'white',
+                fontSize: '0.875rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#6d28d9'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#7c3aed'}
+            >
+              Connect Wallet
+            </button>
+          )}
         </div>
       </nav>
     </header>
   );
 }
+
 

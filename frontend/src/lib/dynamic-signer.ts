@@ -1,91 +1,64 @@
+import type { Signer } from "@linera/client";
 import type { Wallet as DynamicWallet } from "@dynamic-labs/sdk-react-core";
+import { isEthereumWallet } from "@dynamic-labs/ethereum";
 
-/**
- * DynamicSigner bridges Dynamic Labs wallet with Linera's signing interface
- */
-export class DynamicSigner {
-  private wallet: DynamicWallet;
+export class DynamicSigner implements Signer {
+  private dynamicWallet: DynamicWallet;
 
   constructor(dynamicWallet: DynamicWallet) {
-    if (!dynamicWallet) {
-      throw new Error("DynamicWallet is required");
-    }
-    this.wallet = dynamicWallet;
+    this.dynamicWallet = dynamicWallet;
   }
 
-  /**
-   * Sign a message using the Dynamic wallet
-   * @param owner - The owner address (public key as string)
-   * @param value - The message to sign as Uint8Array
-   * @returns The signature as a hex string
-   */
+  async address(): Promise<string> {
+    return this.dynamicWallet.address;
+  }
+
+  async containsKey(owner: string): Promise<boolean> {
+    const walletAddress = this.dynamicWallet.address;
+    return owner.toLowerCase() === walletAddress.toLowerCase();
+  }
+
   async sign(owner: string, value: Uint8Array): Promise<string> {
+    const address: `0x${string}` = owner as `0x${string}`;
+    const primaryWallet = this.dynamicWallet.address;
+
+    if (!primaryWallet || !owner) {
+      throw new Error("No primary wallet found");
+    }
+
+    if (owner.toLowerCase() !== primaryWallet.toLowerCase()) {
+      throw new Error("Owner does not match primary wallet");
+    }
+
     try {
-      console.log('🔐 Signing message for owner:', owner);
-      
-      // Convert Uint8Array to hex string for signing
-      const messageHex = '0x' + Array.from(value)
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
+      const msgHex: `0x${string}` = `0x${uint8ArrayToHex(value)}`;
 
-      // Sign with Dynamic wallet connector
-      if (!this.wallet.connector) {
-        throw new Error("Wallet connector not available");
-      }
+      // IMPORTANT: The value parameter is already pre-hashed, and the standard `signMessage`
+      // method would hash it again, resulting in a double-hash. To avoid this, we bypass
+      // the standard signing flow and use `personal_sign` directly on the wallet client.
+      // DO NOT USE: this.dynamicWallet.signMessage(msgHex) - it would cause double-hashing
 
-      // Use the connector's signMessage method through the ethers provider
-      // This is a simplified version - adjust based on your actual Dynamic setup
-      const signature = await (this.wallet.connector as any).signMessage?.(messageHex) || messageHex;
-      
-      if (!signature) {
-        throw new Error("Failed to get signature from Dynamic wallet");
-      }
+      // Note: First cast the wallet to an Ethereum wallet to get the wallet client
+      if (!isEthereumWallet(this.dynamicWallet)) throw new Error();
+      const walletClient = await this.dynamicWallet.getWalletClient();
+      const signature = await walletClient.request({
+        method: "personal_sign",
+        params: [msgHex, address],
+      });
 
-      // Return signature as hex string (Linera expects string, not Uint8Array)
+      if (!signature) throw new Error("Failed to sign message");
       return signature;
-    } catch (error) {
-      console.error("Error signing message with Dynamic:", error);
+    } catch (error: any) {
+      console.error("Failed to sign message:", error);
       throw new Error(
-        `Failed to sign message: ${error instanceof Error ? error.message : "Unknown error"}`
+        `Dynamic signature request failed: ${error?.message || error}`
       );
     }
   }
-
-  /**
-   * Get the public key from the Dynamic wallet
-   */
-  async getPublicKey(): Promise<Uint8Array> {
-    const address = this.wallet.address;
-    if (!address) {
-      throw new Error("No address available from Dynamic wallet");
-    }
-
-    // Convert address to bytes
-    const addressBytes = new Uint8Array(
-      address.slice(2).match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []
-    );
-
-    return addressBytes;
-  }
-
-  /**
-   * Get the wallet address
-   */
-  getAddress(): string {
-    return this.wallet.address;
-  }
-
-  /**
-   * Check if the signer contains a specific key
-   * Required by Linera's Signer interface
-   * @param owner - The owner address to check
-   * @returns Promise resolving to true if the key is available
-   */
-  async containsKey(owner: string): Promise<boolean> {
-    // For Dynamic wallet integration, we check if the owner matches the wallet address
-    // This could be enhanced to actually verify the key ownership
-    console.log('🔍 Checking key for owner:', owner);
-    return this.wallet.address.toLowerCase() === owner.toLowerCase();
-  }
 }
 
+function uint8ArrayToHex(bytes: Uint8Array): string {
+  return Array.from(bytes)
+    .map((b: number) => b.toString(16).padStart(2, "0"))
+    .join("");
+}

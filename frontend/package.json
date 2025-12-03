@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dynamic-labs/ethereum": "^4.40.2",
-    "@dynamic-labs/sdk-react-core": "^4.40.2",
+    "@dynamic-labs/ethereum": "^4",
+    "@dynamic-labs/sdk-react-core": "^4",
     "@linera/client": "^0.15.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.4"
+    "react-router-dom": "^7.9.4",
+    "viem": "^2.28.0",
+    "vite-plugin-node-polyfills": "^0.24.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
