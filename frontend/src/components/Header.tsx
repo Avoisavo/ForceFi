@@ -7,6 +7,7 @@ export default function Header() {
   const [lineraBalance, setLineraBalance] = useState<string>('0.00');
   const [lineraChainId, setLineraChainId] = useState<string>('');
   const [isLineraConnected, setIsLineraConnected] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const connectLinera = async () => {
@@ -132,63 +133,107 @@ export default function Header() {
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           {primaryWallet && isLineraConnected ? (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
-              <div style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: 'rgba(59, 130, 246, 0.1)', // bg-blue-500/10
-                border: '1px solid rgba(59, 130, 246, 0.3)', // border-blue-500/30
-                borderRadius: '0.5rem',
-                color: '#60a5fa', // text-blue-400
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                Dynamic: {primaryWallet.address.slice(0, 6)}...{primaryWallet.address.slice(-4)}
-              </div>
-              <div style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)', // bg-green-500/10
-                border: '1px solid rgba(34, 197, 94, 0.3)', // border-green-500/30
-                borderRadius: '0.5rem',
-                color: '#4ade80', // text-green-400
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                Linera Chain: {lineraChainId.slice(0, 6)}...
-              </div>
-              <div style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: 'rgba(168, 85, 247, 0.1)', // bg-purple-500/10
-                border: '1px solid rgba(168, 85, 247, 0.3)', // border-purple-500/30
-                borderRadius: '0.5rem',
-                color: '#c084fc', // text-purple-400
-                fontFamily: 'monospace',
-                fontSize: '0.875rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}>
-                Balance: {lineraBalance}
-              </div>
+            <div style={{ position: 'relative' }}>
               <button
-                onClick={handleLogOut}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 style={{
-                  marginTop: '0.25rem',
-                  fontSize: '0.75rem',
-                  color: '#94a3b8',
-                  background: 'none',
-                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  backgroundColor: 'rgba(124, 58, 237, 0.1)',
+                  border: '1px solid rgba(124, 58, 237, 0.2)',
+                  borderRadius: '0.5rem',
+                  color: '#a78bfa',
+                  fontFamily: 'monospace',
+                  fontSize: '0.875rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
                   cursor: 'pointer',
-                  textDecoration: 'underline'
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(124, 58, 237, 0.2)';
+                  e.currentTarget.style.borderColor = 'rgba(124, 58, 237, 0.4)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(124, 58, 237, 0.1)';
+                  e.currentTarget.style.borderColor = 'rgba(124, 58, 237, 0.2)';
                 }}
               >
-                Disconnect
+                <span style={{ opacity: 0.7 }}>Connected:</span> {primaryWallet.address.slice(0, 6)}...{primaryWallet.address.slice(-4)}
+                <span style={{ fontSize: '0.75rem', opacity: 0.5, transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
               </button>
+
+              {isDropdownOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 0.5rem)',
+                  right: 0,
+                  width: '240px',
+                  backgroundColor: 'rgba(17, 17, 20, 0.95)',
+                  backdropFilter: 'blur(16px)',
+                  border: '1px solid rgba(124, 58, 237, 0.2)',
+                  borderRadius: '0.75rem',
+                  padding: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.75rem',
+                  boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5)',
+                  zIndex: 100
+                }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '500' }}>Linera Chain ID</span>
+                    <div style={{
+                      fontFamily: 'monospace',
+                      fontSize: '0.8125rem',
+                      color: '#e2e8f0',
+                      wordBreak: 'break-all',
+                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                      padding: '0.5rem',
+                      borderRadius: '0.375rem'
+                    }}>
+                      {lineraChainId ? lineraChainId.slice(0, 16) + '...' : 'Loading...'}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: '500' }}>Balance</span>
+                    <div style={{
+                      fontFamily: 'monospace',
+                      fontSize: '1rem',
+                      color: '#a78bfa',
+                      fontWeight: '600'
+                    }}>
+                      {lineraBalance} <span style={{ fontSize: '0.75rem', opacity: 0.7 }}>LINERA</span>
+                    </div>
+                  </div>
+
+                  <div style={{ height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)', margin: '0.25rem 0' }} />
+
+                  <button
+                    onClick={handleLogOut}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                      border: '1px solid rgba(239, 68, 68, 0.2)',
+                      borderRadius: '0.375rem',
+                      color: '#f87171',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                    }}
+                  >
+                    Disconnect Wallet
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <button
