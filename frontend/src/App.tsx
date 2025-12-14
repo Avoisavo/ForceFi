@@ -155,18 +155,26 @@ function HomePage() {
   );
 }
 
+import { MarketProvider } from './contexts/MarketContext';
+import NewEvent from './components/newEvent';
+
+// ... imports ...
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/markets" element={<Dashboard />} />
-        <Route path="/bet" element={<Bet />} />
-        <Route path="/sports" element={<Sport />} />
-        <Route path="/sports/:eventId" element={<SportMarket />} />
-        <Route path="/wannabet" element={<Wannabet />} />
-      </Routes>
-    </BrowserRouter>
+    <MarketProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/markets" element={<Dashboard />} />
+          <Route path="/bet" element={<Bet />} />
+          <Route path="/sports" element={<Sport />} />
+          <Route path="/sports/:eventId" element={<SportMarket />} />
+          <Route path="/wannabet" element={<Wannabet />} />
+          <Route path="/new-event" element={<NewEvent />} />
+        </Routes>
+      </BrowserRouter>
+    </MarketProvider>
   );
 }
 

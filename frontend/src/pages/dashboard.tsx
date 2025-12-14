@@ -7,134 +7,22 @@ import bitcoinLogo from '../assets/bitcoinlogo.png';
 import chainlinkLogo from '../assets/chainlinklogo.png';
 import forceHero from '../assets/force_hero.png';
 
-interface Market {
-  id: number;
-  question: string;
-  imageUrl: string;
-  options: {
-    name: string;
-    odds: number;
-    color: string;
-  }[];
-  totalPool: number;
-  endTime: string;
-}
+import { useMarkets } from '../contexts/MarketContext';
+
+// ... imports ...
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { isConnected } = useLinera();
+  const { markets } = useMarkets();
 
   // Unified color palette: Blue (#3b82f6) and Purple (#a78bfa) and White/Gray
-  const PRIMARY_BLUE = "#3b82f6";
-  const SECONDARY_PURPLE = "#a78bfa";
+  // const PRIMARY_BLUE = "#3b82f6";
+  // const SECONDARY_PURPLE = "#a78bfa";
 
-  const [markets] = useState<Market[]>([
-    {
-      id: 1,
-      question: "Will Bitcoin hit $100K by end of 2025?",
-      imageUrl: bitcoinLogo,
-      options: [
-        { name: "YES", odds: 65, color: PRIMARY_BLUE },
-        { name: "NO", odds: 35, color: SECONDARY_PURPLE }
-      ],
-      totalPool: 125000,
-      endTime: "Dec 31, 2025"
-    },
-    {
-      id: 5,
-      question: "US Presidential Election 2028",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/512px-Flag_of_the_United_States.svg.png",
-      options: [
-        { name: "DEMOCRAT", odds: 48, color: PRIMARY_BLUE },
-        { name: "REPUBLICAN", odds: 47, color: SECONDARY_PURPLE },
-        { name: "OTHER", odds: 5, color: "#94a3b8" }
-      ],
-      totalPool: 215000,
-      endTime: "Nov 5, 2028"
-    },
-    {
-      id: 6,
-      question: "Will AI pass Turing Test by 2026?",
-      imageUrl: "https://cdn-icons-png.flaticon.com/512/8618/8618682.png",
-      options: [
-        { name: "YES", odds: 72, color: PRIMARY_BLUE },
-        { name: "NO", odds: 28, color: SECONDARY_PURPLE }
-      ],
-      totalPool: 54000,
-      endTime: "Dec 31, 2026"
-    },
-    {
-      id: 7,
-      question: "Total Crypto Market Cap EOY 2025",
-      imageUrl: "https://cdn-icons-png.flaticon.com/512/7024/7024046.png",
-      options: [
-        { name: ">$5T", odds: 35, color: PRIMARY_BLUE },
-        { name: "$3-5T", odds: 45, color: SECONDARY_PURPLE },
-        { name: "<$3T", odds: 20, color: "#94a3b8" }
-      ],
-      totalPool: 142000,
-      endTime: "Dec 31, 2025"
-    },
-    {
-      id: 8,
-      question: "Will Tesla stock hit $500 in 2025?",
-      imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Tesla_Motors.svg/512px-Tesla_Motors.svg.png",
-      options: [
-        { name: "YES", odds: 38, color: PRIMARY_BLUE },
-        { name: "NO", odds: 62, color: SECONDARY_PURPLE }
-      ],
-      totalPool: 76000,
-      endTime: "Dec 31, 2025"
-    },
-    {
-      id: 9,
-      question: "Next Bitcoin Halving Impact",
-      imageUrl: bitcoinLogo,
-      options: [
-        { name: "BULLISH", odds: 68, color: PRIMARY_BLUE },
-        { name: "BEARISH", odds: 18, color: SECONDARY_PURPLE },
-        { name: "NEUTRAL", odds: 14, color: "#94a3b8" }
-      ],
-      totalPool: 187000,
-      endTime: "May 1, 2028"
-    },
-    {
-      id: 10,
-      question: "Will global inflation drop below 2% in 2025?",
-      imageUrl: "https://cdn-icons-png.flaticon.com/512/2991/2991148.png",
-      options: [
-        { name: "YES", odds: 31, color: PRIMARY_BLUE },
-        { name: "NO", odds: 69, color: SECONDARY_PURPLE }
-      ],
-      totalPool: 62000,
-      endTime: "Dec 31, 2025"
-    },
-    {
-      id: 11,
-      question: "Web3 Gaming Market Size by 2026",
-      imageUrl: "https://cdn-icons-png.flaticon.com/512/3588/3588592.png",
-      options: [
-        { name: ">$100B", odds: 25, color: PRIMARY_BLUE },
-        { name: "$50-100B", odds: 42, color: SECONDARY_PURPLE },
-        { name: "<$50B", odds: 33, color: "#94a3b8" }
-      ],
-      totalPool: 45000,
-      endTime: "Dec 31, 2026"
-    },
-    {
-      id: 12,
-      question: "Will Chainlink reach $100 in 2025?",
-      imageUrl: chainlinkLogo,
-      options: [
-        { name: "YES", odds: 29, color: PRIMARY_BLUE },
-        { name: "NO", odds: 71, color: SECONDARY_PURPLE }
-      ],
-      totalPool: 38000,
-      endTime: "Dec 31, 2025"
-    }
-  ]);
+  // Removed local markets state as it's now in context
 
-  const handleBet = (market: Market, option: { name: string; odds: number; color: string }) => {
+  const handleBet = (market: any, option: { name: string; odds: number; color: string }) => {
     const params = new URLSearchParams({
       marketId: market.id.toString(),
       question: market.question,
@@ -158,6 +46,31 @@ export default function Dashboard() {
     };
     loadMarketsFromLinera();
   }, [isConnected]);
+
+  const newEventButton = (
+    <button
+      onClick={() => navigate('/new-event')}
+      style={{
+        padding: '0.5rem 1rem',
+        background: '#a78bfa',
+        color: '#000',
+        border: 'none',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        fontWeight: '600',
+        transition: 'all 0.2s',
+        fontSize: '0.875rem'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = '#8b5cf6';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = '#a78bfa';
+      }}
+    >
+      + New Event
+    </button>
+  );
 
   return (
     <div style={{
@@ -185,7 +98,7 @@ export default function Dashboard() {
       }} />
 
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <Header />
+        <Header rightContent={newEventButton} />
 
         {/* Hero Section */}
         <div style={{

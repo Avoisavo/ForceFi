@@ -133,6 +133,20 @@ export default function Header({ rightContent }: HeaderProps) {
               Markets
             </a>
           </li>
+          <li>
+            <a href="/sports" style={{
+              color: '#94a3b8',
+              textDecoration: 'none',
+              transition: 'color 0.2s',
+              fontSize: '0.9375rem',
+              fontWeight: '500'
+            }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
+            >
+              Sports
+            </a>
+          </li>
         </ul>
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
