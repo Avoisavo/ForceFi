@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/dashboard';
 import Bet from './pages/bet';
 import Sport from './pages/sport';
+import SportMarket from './pages/sportMarket';
 import forceHero from './assets/force_hero.png';
 
 function HomePage() {
@@ -161,6 +162,7 @@ function App() {
         <Route path="/markets" element={<Dashboard />} />
         <Route path="/bet" element={<Bet />} />
         <Route path="/sports" element={<Sport />} />
+        <Route path="/sports/:eventId" element={<SportMarket />} />
       </Routes>
     </BrowserRouter>
   );

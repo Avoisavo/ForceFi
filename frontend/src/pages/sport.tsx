@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Team {
     name: string;
     slug: string;
     shortName: string;
+}
+
+interface Score {
+    current: number;
+    display: number;
+}
+
+interface Tournament {
+    name: string;
+    slug: string;
 }
 
 interface Event {
@@ -12,6 +23,9 @@ interface Event {
     startTimestamp: number;
     homeTeam: Team;
     awayTeam: Team;
+    homeScore?: Score;
+    awayScore?: Score;
+    tournament: Tournament;
 }
 
 interface SeasonRating {
@@ -25,10 +39,16 @@ interface ApiResponse {
     seasonRatings: SeasonRating[];
 }
 
+interface GroupedEvent {
+    event: Event;
+    ratings: number[];
+}
+
 const Sport = () => {
-    const [data, setData] = useState<ApiResponse | null>(null);
+    const [groupedEvents, setGroupedEvents] = useState<GroupedEvent[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = () => {
@@ -38,8 +58,21 @@ const Sport = () => {
             xhr.addEventListener('readystatechange', function () {
                 if (this.readyState === this.DONE) {
                     try {
-                        const responseData = JSON.parse(this.responseText);
-                        setData(responseData);
+                        const responseData: ApiResponse = JSON.parse(this.responseText);
+
+                        // Group by event ID
+                        const groups: { [key: number]: GroupedEvent } = {};
+                        responseData.seasonRatings?.forEach((item) => {
+                            if (!groups[item.eventId]) {
+                                groups[item.eventId] = {
+                                    event: item.event,
+                                    ratings: []
+                                };
+                            }
+                            groups[item.eventId].ratings.push(item.rating);
+                        });
+
+                        setGroupedEvents(Object.values(groups));
                         setLoading(false);
                     } catch (err) {
                         setError('Failed to parse response');
@@ -63,6 +96,17 @@ const Sport = () => {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
+        });
+    };
+
+    const handleCardClick = (group: GroupedEvent) => {
+        navigate(`/sports/${group.event.id}`, {
+            state: {
+                eventData: {
+                    event: group.event,
+                    ratings: group.ratings
+                }
+            }
         });
     };
 
@@ -92,19 +136,21 @@ const Sport = () => {
                 gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                 gap: '1.5rem'
             }}>
-                {data?.seasonRatings?.map((item) => (
-                    <div key={item.eventId} style={{
-                        background: '#111',
-                        border: '1px solid #333',
-                        borderRadius: '12px',
-                        padding: '1.5rem',
-                        transition: 'transform 0.2s, border-color 0.2s',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        minHeight: '180px'
-                    }}
+                {groupedEvents.map((group) => (
+                    <div key={group.event.id}
+                        onClick={() => handleCardClick(group)}
+                        style={{
+                            background: '#111',
+                            border: '1px solid #333',
+                            borderRadius: '12px',
+                            padding: '1.5rem',
+                            transition: 'transform 0.2s, border-color 0.2s',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            minHeight: '180px'
+                        }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.borderColor = '#666';
                             e.currentTarget.style.transform = 'translateY(-2px)';
@@ -134,7 +180,7 @@ const Sport = () => {
                                     fontSize: '0.875rem',
                                     color: '#666'
                                 }}>
-                                    {formatDate(item.event.startTimestamp)}
+                                    {formatDate(group.event.startTimestamp)}
                                 </span>
                             </div>
 
@@ -144,11 +190,11 @@ const Sport = () => {
                                 marginBottom: '0.5rem',
                                 lineHeight: '1.4'
                             }}>
-                                {item.event.homeTeam.shortName} vs {item.event.awayTeam.shortName}
+                                {group.event.homeTeam.shortName} vs {group.event.awayTeam.shortName}
                             </h3>
 
                             <p style={{ color: '#888', fontSize: '0.875rem' }}>
-                                Player Rating: {item.rating}
+                                {group.ratings.length > 1 ? `${group.ratings.length} Ratings Available` : `Rating: ${group.ratings[0]}`}
                             </p>
                         </div>
 
@@ -162,7 +208,7 @@ const Sport = () => {
                         }}>
                             <span style={{ color: '#666', fontSize: '0.875rem' }}>Resolution Date</span>
                             <span style={{ color: '#fff', fontWeight: '500' }}>
-                                {formatDate(item.event.startTimestamp)}
+                                {formatDate(group.event.startTimestamp)}
                             </span>
                         </div>
                     </div>
