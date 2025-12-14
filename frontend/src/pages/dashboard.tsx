@@ -23,6 +23,11 @@ export default function Dashboard() {
   // Removed local markets state as it's now in context
 
   const handleBet = (market: any, option: { name: string; odds: number; color: string }) => {
+    if (market.question === "Will Sarah finish her project on time?") {
+      navigate('/judge');
+      return;
+    }
+
     const params = new URLSearchParams({
       marketId: market.id.toString(),
       question: market.question,

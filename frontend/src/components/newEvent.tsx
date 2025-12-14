@@ -23,10 +23,25 @@ const NewEvent = () => {
         }
     };
 
+    const MEME_LOGOS = [
+        "https://cryptologos.cc/logos/pepe-pepe-logo.png",
+        "https://cryptologos.cc/logos/dogecoin-doge-logo.png",
+        "https://cryptologos.cc/logos/shiba-inu-shib-logo.png",
+        "https://cryptologos.cc/logos/bonk-bonk-logo.png",
+        "https://cryptologos.cc/logos/floki-inu-floki-logo.png",
+        "https://cryptologos.cc/logos/dogwifhat-wif-logo.png",
+        "https://cryptologos.cc/logos/apecoin-ape-logo.png",
+        "https://cryptologos.cc/logos/mog-coin-mog-logo.png",
+        "https://cryptologos.cc/logos/brett-brett-logo.png",
+        "https://cryptologos.cc/logos/book-of-meme-bome-logo.png",
+        "https://cryptologos.cc/logos/popcat-popcat-logo.png"
+    ];
+
     const handleSubmit = () => {
+        const randomLogo = MEME_LOGOS[Math.floor(Math.random() * MEME_LOGOS.length)];
         addMarket({
             question: formData.title,
-            imageUrl: "https://cdn-icons-png.flaticon.com/512/2991/2991148.png", // Default icon
+            imageUrl: randomLogo,
             options: [
                 { name: "YES", odds: 50, color: "#3b82f6" },
                 { name: "NO", odds: 50, color: "#a78bfa" }

@@ -39,7 +39,7 @@ const SECONDARY_PURPLE = "#a78bfa";
 const initialMarkets: Market[] = [
     {
         id: 1,
-        question: "Will he get A for finals?",
+        question: "Will Daniel get A for finals?",
         imageUrl: "https://cryptologos.cc/logos/pepe-pepe-logo.png",
         options: [
             { name: "YES", odds: 45, color: PRIMARY_BLUE },

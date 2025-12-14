@@ -44,6 +44,11 @@ interface GroupedEvent {
     ratings: number[];
 }
 
+import Header from '../components/Header';
+import forceHero from '../assets/force_hero.png';
+
+// ... existing interfaces ...
+
 const Sport = () => {
     const [groupedEvents, setGroupedEvents] = useState<GroupedEvent[]>([]);
     const [loading, setLoading] = useState(true);
@@ -51,6 +56,7 @@ const Sport = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // ... existing fetchData logic ...
         const fetchData = () => {
             const xhr = new XMLHttpRequest();
             xhr.withCredentials = true;
@@ -110,134 +116,209 @@ const Sport = () => {
         });
     };
 
+    const newEventButton = (
+        <button
+            onClick={() => navigate('/new-event')}
+            style={{
+                padding: '0.5rem 1rem',
+                background: '#a78bfa',
+                color: '#000',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.2s',
+                fontSize: '0.875rem'
+            }}
+            onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#8b5cf6';
+            }}
+            onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#a78bfa';
+            }}
+        >
+            + New Event
+        </button>
+    );
+
     return (
         <div style={{
-            padding: '2rem',
-            color: 'white',
             minHeight: '100vh',
-            background: '#000',
-            fontFamily: "'Inter', sans-serif"
+            display: 'flex',
+            flexDirection: 'column',
+            background: '#000000',
+            fontFamily: "'Inter', sans-serif",
+            position: 'relative',
+            overflow: 'hidden'
         }}>
-            <h1 style={{
-                fontSize: '2rem',
-                fontWeight: 'bold',
-                marginBottom: '2rem',
-                borderBottom: '1px solid #333',
-                paddingBottom: '1rem'
-            }}>
-                Player Ratings Markets
-            </h1>
-
-            {loading && <div style={{ color: '#888' }}>Loading markets...</div>}
-            {error && <div style={{ color: '#ff4444' }}>{error}</div>}
-
+            {/* Background Image from Landing Page */}
             <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                gap: '1.5rem'
-            }}>
-                {groupedEvents.map((group) => (
-                    <div key={group.event.id}
-                        onClick={() => handleCardClick(group)}
-                        style={{
-                            background: '#111',
-                            border: '1px solid #333',
-                            borderRadius: '12px',
-                            padding: '1.5rem',
-                            transition: 'transform 0.2s, border-color 0.2s',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            minHeight: '180px'
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = '#666';
-                            e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = '#333';
-                            e.currentTarget.style.transform = 'translateY(0)';
-                        }}
-                    >
-                        <div>
-                            <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                marginBottom: '1rem'
-                            }}>
-                                <span style={{
-                                    background: 'rgba(255, 255, 255, 0.1)',
-                                    padding: '4px 8px',
-                                    borderRadius: '4px',
-                                    fontSize: '0.75rem',
-                                    color: '#aaa'
-                                }}>
-                                    NBA
-                                </span>
-                                <span style={{
-                                    fontSize: '0.875rem',
-                                    color: '#666'
-                                }}>
-                                    {formatDate(group.event.startTimestamp)}
-                                </span>
-                            </div>
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundImage: `url(${forceHero})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                opacity: 0.2,
+                zIndex: 0,
+                pointerEvents: 'none'
+            }} />
 
-                            <h3 style={{
-                                fontSize: '1.25rem',
-                                fontWeight: '600',
-                                marginBottom: '1rem',
-                                lineHeight: '1.4'
-                            }}>
-                                Will {group.event.homeTeam.shortName} win against {group.event.awayTeam.shortName}?
-                            </h3>
+            <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <Header rightContent={newEventButton} />
 
-                            {/* Prediction Bar */}
-                            <div style={{ marginBottom: '1rem' }}>
+                {/* Hero Section */}
+                <div style={{
+                    padding: '3rem 2rem',
+                    borderBottom: '1px solid rgba(255,255,255,0.05)',
+                    background: 'rgba(0,0,0,0.3)',
+                    backdropFilter: 'blur(10px)'
+                }}>
+                    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                        <h1 style={{
+                            fontSize: '3rem',
+                            fontWeight: '700',
+                            color: '#ffffff',
+                            marginBottom: '1rem',
+                            letterSpacing: '-0.02em',
+                            background: 'linear-gradient(90deg, #fff 0%, #a78bfa 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                        }}>
+                            Player Ratings Markets
+                        </h1>
+                        <p style={{
+                            fontSize: '1.125rem',
+                            color: '#94a3b8',
+                            fontWeight: '400',
+                            maxWidth: '600px'
+                        }}>
+                            Trade on player performance ratings with instant settlement.
+                        </p>
+                    </div>
+                </div>
+
+                <div style={{
+                    flex: 1,
+                    padding: '2rem',
+                    width: '100%',
+                    maxWidth: '1400px',
+                    margin: '0 auto'
+                }}>
+                    {loading && <div style={{ color: '#888' }}>Loading markets...</div>}
+                    {error && <div style={{ color: '#ff4444' }}>{error}</div>}
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                        gap: '1.5rem'
+                    }}>
+                        {groupedEvents.map((group) => (
+                            <div key={group.event.id}
+                                onClick={() => handleCardClick(group)}
+                                style={{
+                                    background: '#111',
+                                    border: '1px solid #333',
+                                    borderRadius: '12px',
+                                    padding: '1.5rem',
+                                    transition: 'transform 0.2s, border-color 0.2s',
+                                    cursor: 'pointer',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'space-between',
+                                    minHeight: '180px'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.borderColor = '#666';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.borderColor = '#333';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}
+                            >
+                                <div>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem',
+                                        marginBottom: '1rem'
+                                    }}>
+                                        <span style={{
+                                            background: 'rgba(255, 255, 255, 0.1)',
+                                            padding: '4px 8px',
+                                            borderRadius: '4px',
+                                            fontSize: '0.75rem',
+                                            color: '#aaa'
+                                        }}>
+                                            NBA
+                                        </span>
+                                        <span style={{
+                                            fontSize: '0.875rem',
+                                            color: '#666'
+                                        }}>
+                                            {formatDate(group.event.startTimestamp)}
+                                        </span>
+                                    </div>
+
+                                    <h3 style={{
+                                        fontSize: '1.25rem',
+                                        fontWeight: '600',
+                                        marginBottom: '1rem',
+                                        lineHeight: '1.4'
+                                    }}>
+                                        Will {group.event.homeTeam.shortName} win against {group.event.awayTeam.shortName}?
+                                    </h3>
+
+                                    {/* Prediction Bar */}
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            marginBottom: '0.5rem',
+                                            fontSize: '0.875rem',
+                                            fontWeight: '600'
+                                        }}>
+                                            <span style={{ color: '#3b82f6' }}>YES 50%</span>
+                                            <span style={{ color: '#a78bfa' }}>NO 50%</span>
+                                        </div>
+                                        <div style={{
+                                            height: '8px',
+                                            width: '100%',
+                                            background: '#333',
+                                            borderRadius: '4px',
+                                            overflow: 'hidden',
+                                            display: 'flex'
+                                        }}>
+                                            <div style={{ width: '50%', background: '#3b82f6' }} />
+                                            <div style={{ width: '50%', background: '#a78bfa' }} />
+                                        </div>
+                                    </div>
+
+                                    <p style={{ color: '#888', fontSize: '0.875rem' }}>
+                                        {group.ratings.length > 1 ? `${group.ratings.length} Ratings Available` : `Rating: ${group.ratings[0]}`}
+                                    </p>
+                                </div>
+
                                 <div style={{
+                                    marginTop: '1rem',
+                                    paddingTop: '1rem',
+                                    borderTop: '1px solid #222',
                                     display: 'flex',
                                     justifyContent: 'space-between',
-                                    marginBottom: '0.5rem',
-                                    fontSize: '0.875rem',
-                                    fontWeight: '600'
+                                    alignItems: 'center'
                                 }}>
-                                    <span style={{ color: '#3b82f6' }}>YES 50%</span>
-                                    <span style={{ color: '#a78bfa' }}>NO 50%</span>
-                                </div>
-                                <div style={{
-                                    height: '8px',
-                                    width: '100%',
-                                    background: '#333',
-                                    borderRadius: '4px',
-                                    overflow: 'hidden',
-                                    display: 'flex'
-                                }}>
-                                    <div style={{ width: '50%', background: '#3b82f6' }} />
-                                    <div style={{ width: '50%', background: '#a78bfa' }} />
+                                    <span style={{ color: '#666', fontSize: '0.875rem' }}>Resolution Date</span>
+                                    <span style={{ color: '#fff', fontWeight: '500' }}>
+                                        {formatDate(group.event.startTimestamp)}
+                                    </span>
                                 </div>
                             </div>
-
-                            <p style={{ color: '#888', fontSize: '0.875rem' }}>
-                                {group.ratings.length > 1 ? `${group.ratings.length} Ratings Available` : `Rating: ${group.ratings[0]}`}
-                            </p>
-                        </div>
-
-                        <div style={{
-                            marginTop: '1rem',
-                            paddingTop: '1rem',
-                            borderTop: '1px solid #222',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        }}>
-                            <span style={{ color: '#666', fontSize: '0.875rem' }}>Resolution Date</span>
-                            <span style={{ color: '#fff', fontWeight: '500' }}>
-                                {formatDate(group.event.startTimestamp)}
-                            </span>
-                        </div>
+                        ))}
                     </div>
-                ))}
+                </div>
             </div>
         </div>
     );

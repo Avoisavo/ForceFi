@@ -157,6 +157,7 @@ function HomePage() {
 
 import { MarketProvider } from './contexts/MarketContext';
 import NewEvent from './components/newEvent';
+import Judge from './pages/judge';
 
 // ... imports ...
 
@@ -172,6 +173,7 @@ function App() {
           <Route path="/sports/:eventId" element={<SportMarket />} />
           <Route path="/wannabet" element={<Wannabet />} />
           <Route path="/new-event" element={<NewEvent />} />
+          <Route path="/judge" element={<Judge />} />
         </Routes>
       </BrowserRouter>
     </MarketProvider>

@@ -8,7 +8,7 @@ const Wannabet = () => {
     const markets = [
         {
             id: 1,
-            title: "Will he get A for finals?",
+            title: "Will Daniel get A for finals?",
             resolutionDate: "Dec 20, 2025",
             volume: "$1,234",
             chance: "45%"
