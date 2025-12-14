@@ -23,7 +23,7 @@ export default function Dashboard() {
   // Removed local markets state as it's now in context
 
   const handleBet = (market: any, option: { name: string; odds: number; color: string }) => {
-    if (market.question === "Alice or Bella finish her project on time?") {
+    if (market.question === "Did Alice or Bella finish her project on time?") {
       navigate('/judge');
       return;
     }
@@ -76,6 +76,13 @@ export default function Dashboard() {
       + New Event
     </button>
   );
+
+  const handleCardClick = (market: any) => {
+    console.log('Card clicked:', market.id, market.question);
+    if (market.id === 5 || market.question === "Did Alice or Bella finish her project on time?" || market.question === "Will Sarah finish her project on time?") {
+      navigate('/judge');
+    }
+  };
 
   return (
     <div style={{
@@ -162,6 +169,7 @@ export default function Dashboard() {
                 overflow: 'hidden',
                 backdropFilter: 'blur(10px)'
               }}
+                onClick={() => handleCardClick(market)}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-4px)';
                   e.currentTarget.style.borderColor = 'rgba(167, 139, 250, 0.3)';
@@ -174,6 +182,24 @@ export default function Dashboard() {
                   e.currentTarget.style.boxShadow = 'none';
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
                 }}>
+
+                {(market.id === 5 || market.question === "Did Alice or Bella finish her project on time?" || market.question === "Will Sarah finish her project on time?") && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    background: '#fbbf24',
+                    color: '#000',
+                    padding: '4px 8px',
+                    borderRadius: '12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    zIndex: 10,
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                  }}>
+                    You are the judge
+                  </div>
+                )}
 
                 {/* Header with Image */}
                 <div style={{
@@ -202,7 +228,8 @@ export default function Dashboard() {
                     margin: 0,
                     fontWeight: '600',
                     lineHeight: '1.4',
-                    flex: 1
+                    flex: 1,
+                    paddingRight: '110px'
                   }}>
                     {market.question}
                   </h2>
@@ -218,7 +245,10 @@ export default function Dashboard() {
                   {market.options.map((option) => (
                     <button
                       key={option.name}
-                      onClick={() => handleBet(market, option)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBet(market, option);
+                      }}
                       style={{
                         background: 'rgba(0,0,0,0.2)',
                         border: '1px solid rgba(255,255,255,0.05)',

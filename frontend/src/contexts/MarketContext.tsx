@@ -45,7 +45,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 45, color: PRIMARY_BLUE },
             { name: "NO", odds: 55, color: SECONDARY_PURPLE }
         ],
-        totalPool: 1234,
+        totalPool: 123400,
         endTime: "Dec 20, 2025"
     },
     {
@@ -56,7 +56,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 80, color: PRIMARY_BLUE },
             { name: "NO", odds: 20, color: SECONDARY_PURPLE }
         ],
-        totalPool: 567,
+        totalPool: 85600,
         endTime: "Dec 16, 2025"
     },
     {
@@ -67,7 +67,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 20, color: PRIMARY_BLUE },
             { name: "NO", odds: 80, color: SECONDARY_PURPLE }
         ],
-        totalPool: 890,
+        totalPool: 98900,
         endTime: "Dec 16, 2025"
     },
     {
@@ -78,18 +78,18 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 60, color: PRIMARY_BLUE },
             { name: "NO", odds: 40, color: SECONDARY_PURPLE }
         ],
-        totalPool: 120,
+        totalPool: 142000,
         endTime: "Dec 15, 2025"
     },
     {
         id: 5,
-        question: "Alice or Bella finish her project on time?",
+        question: "Did Alice or Bella finish her project on time?",
         imageUrl: "https://cryptologos.cc/logos/floki-inu-floki-logo.png",
         options: [
             { name: "YES", odds: 75, color: PRIMARY_BLUE },
             { name: "NO", odds: 25, color: SECONDARY_PURPLE }
         ],
-        totalPool: 340,
+        totalPool: 134000,
         endTime: "Dec 18, 2025"
     },
     {
@@ -100,7 +100,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 30, color: PRIMARY_BLUE },
             { name: "NO", odds: 70, color: SECONDARY_PURPLE }
         ],
-        totalPool: 45,
+        totalPool: 89000,
         endTime: "Dec 16, 2025"
     },
     {
@@ -111,7 +111,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 90, color: PRIMARY_BLUE },
             { name: "NO", odds: 10, color: SECONDARY_PURPLE }
         ],
-        totalPool: 210,
+        totalPool: 112000,
         endTime: "Dec 15, 2025"
     },
     {
@@ -122,7 +122,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 50, color: PRIMARY_BLUE },
             { name: "NO", odds: 50, color: SECONDARY_PURPLE }
         ],
-        totalPool: 5600,
+        totalPool: 156000,
         endTime: "Dec 17, 2025"
     },
     {
@@ -133,7 +133,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 55, color: PRIMARY_BLUE },
             { name: "NO", odds: 45, color: SECONDARY_PURPLE }
         ],
-        totalPool: 10230,
+        totalPool: 102300,
         endTime: "Dec 15, 2025"
     },
     {
@@ -144,7 +144,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 10, color: PRIMARY_BLUE },
             { name: "NO", odds: 90, color: SECONDARY_PURPLE }
         ],
-        totalPool: 15,
+        totalPool: 95000,
         endTime: "Dec 16, 2025"
     },
     {
@@ -155,7 +155,7 @@ const initialMarkets: Market[] = [
             { name: "YES", odds: 40, color: PRIMARY_BLUE },
             { name: "NO", odds: 60, color: SECONDARY_PURPLE }
         ],
-        totalPool: 890,
+        totalPool: 89000,
         endTime: "Dec 19, 2025"
     }
 ];

@@ -132,8 +132,7 @@ const NewEvent = () => {
                                             fontSize: '1rem',
                                             fontWeight: 'bold',
                                             width: '100%',
-                                            outline: 'none',
-                                            placeholderColor: 'rgba(0,0,0,0.5)'
+                                            outline: 'none'
                                         }}
                                     />
                                 </div>
