@@ -3,6 +3,7 @@ import Dashboard from './pages/dashboard';
 import Bet from './pages/bet';
 import Sport from './pages/sport';
 import SportMarket from './pages/sportMarket';
+import Wannabet from './pages/wannabet';
 import forceHero from './assets/force_hero.png';
 
 function HomePage() {
@@ -163,6 +164,7 @@ function App() {
         <Route path="/bet" element={<Bet />} />
         <Route path="/sports" element={<Sport />} />
         <Route path="/sports/:eventId" element={<SportMarket />} />
+        <Route path="/wannabet" element={<Wannabet />} />
       </Routes>
     </BrowserRouter>
   );

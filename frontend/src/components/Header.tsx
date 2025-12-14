@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { lineraAdapter } from '../lib/linera-adapter';
 
-export default function Header() {
+interface HeaderProps {
+  rightContent?: React.ReactNode;
+}
+
+export default function Header({ rightContent }: HeaderProps) {
   const { primaryWallet, handleLogOut, setShowAuthFlow } = useDynamicContext();
   const [lineraBalance, setLineraBalance] = useState<string>('0.00');
   const [lineraChainId, setLineraChainId] = useState<string>('');
@@ -132,6 +136,7 @@ export default function Header() {
         </ul>
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {rightContent}
           {primaryWallet && isLineraConnected ? (
             <div style={{ position: 'relative' }}>
               <button
