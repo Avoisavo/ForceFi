@@ -187,11 +187,36 @@ const Sport = () => {
                             <h3 style={{
                                 fontSize: '1.25rem',
                                 fontWeight: '600',
-                                marginBottom: '0.5rem',
+                                marginBottom: '1rem',
                                 lineHeight: '1.4'
                             }}>
-                                {group.event.homeTeam.shortName} vs {group.event.awayTeam.shortName}
+                                Will {group.event.homeTeam.shortName} win against {group.event.awayTeam.shortName}?
                             </h3>
+
+                            {/* Prediction Bar */}
+                            <div style={{ marginBottom: '1rem' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    marginBottom: '0.5rem',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600'
+                                }}>
+                                    <span style={{ color: '#3b82f6' }}>YES 50%</span>
+                                    <span style={{ color: '#a78bfa' }}>NO 50%</span>
+                                </div>
+                                <div style={{
+                                    height: '8px',
+                                    width: '100%',
+                                    background: '#333',
+                                    borderRadius: '4px',
+                                    overflow: 'hidden',
+                                    display: 'flex'
+                                }}>
+                                    <div style={{ width: '50%', background: '#3b82f6' }} />
+                                    <div style={{ width: '50%', background: '#a78bfa' }} />
+                                </div>
+                            </div>
 
                             <p style={{ color: '#888', fontSize: '0.875rem' }}>
                                 {group.ratings.length > 1 ? `${group.ratings.length} Ratings Available` : `Rating: ${group.ratings[0]}`}
@@ -199,7 +224,7 @@ const Sport = () => {
                         </div>
 
                         <div style={{
-                            marginTop: '1.5rem',
+                            marginTop: '1rem',
                             paddingTop: '1rem',
                             borderTop: '1px solid #222',
                             display: 'flex',
