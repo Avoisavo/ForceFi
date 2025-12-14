@@ -36,7 +36,7 @@ const Wannabet = () => {
         },
         {
             id: 5,
-            title: "Will Sarah finish her project on time?",
+            title: "Alice or Bella finish her project on time?",
             resolutionDate: "Dec 18, 2025",
             volume: "$340",
             chance: "75%"

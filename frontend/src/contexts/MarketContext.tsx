@@ -83,7 +83,7 @@ const initialMarkets: Market[] = [
     },
     {
         id: 5,
-        question: "Will Sarah finish her project on time?",
+        question: "Alice or Bella finish her project on time?",
         imageUrl: "https://cryptologos.cc/logos/floki-inu-floki-logo.png",
         options: [
             { name: "YES", odds: 75, color: PRIMARY_BLUE },

@@ -23,7 +23,7 @@ export default function Dashboard() {
   // Removed local markets state as it's now in context
 
   const handleBet = (market: any, option: { name: string; odds: number; color: string }) => {
-    if (market.question === "Will Sarah finish her project on time?") {
+    if (market.question === "Alice or Bella finish her project on time?") {
       navigate('/judge');
       return;
     }
