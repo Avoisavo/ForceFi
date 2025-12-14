@@ -1,8 +1,9 @@
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 
 const SportMarket = () => {
     const { eventId } = useParams();
     const location = useLocation();
+    const navigate = useNavigate();
     const eventData = location.state?.eventData;
 
     if (!eventData) {
@@ -10,6 +11,20 @@ const SportMarket = () => {
             <div style={{ padding: '2rem', color: 'white', minHeight: '100vh', background: '#000' }}>
                 <h1>Event Not Found</h1>
                 <p>No data available for event ID: {eventId}</p>
+                <button
+                    onClick={() => navigate('/sports')}
+                    style={{
+                        marginTop: '1rem',
+                        padding: '0.5rem 1rem',
+                        background: '#333',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    Back to Menu
+                </button>
             </div>
         );
     }
@@ -35,6 +50,33 @@ const SportMarket = () => {
             fontFamily: "'Inter', sans-serif"
         }}>
             <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+                <button
+                    onClick={() => navigate('/sports')}
+                    style={{
+                        marginBottom: '1rem',
+                        padding: '0.5rem 1rem',
+                        background: 'transparent',
+                        color: '#aaa',
+                        border: '1px solid #333',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem',
+                        transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#666';
+                        e.currentTarget.style.color = '#fff';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#333';
+                        e.currentTarget.style.color = '#aaa';
+                    }}
+                >
+                    ← Back to Menu
+                </button>
+
                 <h1 style={{
                     fontSize: '2.5rem',
                     fontWeight: 'bold',
