@@ -1,4 +1,5 @@
-import initLinera, {
+import {
+  initialize as initLinera,
   Faucet,
   Client,
   Wallet,
@@ -113,9 +114,8 @@ export class LineraAdapter {
     if (!this.provider) throw new Error("Not connected to Linera");
     if (!appId) throw new Error("Application ID is required");
 
-    // Use client.frontend().application(appId) as per official docs
+    // Use client.application(appId) directly as per new SDK
     const application = await this.provider.client
-      .frontend()
       .application(appId);
 
     if (!application) throw new Error("Failed to get application");
