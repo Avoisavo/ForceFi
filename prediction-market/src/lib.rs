@@ -19,20 +19,20 @@ impl ServiceAbi for PredictionMarketAbi {
 
 #[derive(Debug, Deserialize, Serialize, GraphQLMutationRoot)]
 pub enum Operation {
-    /// Create a new prediction market
     CreateMarket {
-        question: String,
-        outcomes: Vec<String>,
+        title: String,
+        end_time: u64,
     },
-    /// Buy shares for a specific outcome
-    BuyShares {
+    Bet {
         market_id: u64,
-        outcome: usize,
-        shares: u64,
+        outcome: u64,
+        amount: u64,
     },
-    /// Resolve a market with the winning outcome
-    ResolveMarket {
+    Resolve {
         market_id: u64,
-        winning_outcome: usize,
+        winning_outcome: u64,
+    },
+    Claim {
+        market_id: u64,
     },
 }

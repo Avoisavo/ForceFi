@@ -7,11 +7,8 @@ use linera_sdk::{
     views::{RootView, View},
     Contract, ContractRuntime,
 };
-use serde::{Deserialize, Serialize};
-
 use prediction_market::Operation;
-
-use self::state::PredictionMarketState;
+use self::state::{Market, PredictionMarketState};
 
 pub struct PredictionMarketContract {
     state: PredictionMarketState,
@@ -38,123 +35,117 @@ impl Contract for PredictionMarketContract {
     }
 
     async fn instantiate(&mut self, _argument: Self::InstantiationArgument) {
-        // validate that the application parameters were configured correctly.
         self.runtime.application_parameters();
         self.state.next_market_id.set(0);
     }
 
     async fn execute_operation(&mut self, operation: Self::Operation) -> Self::Response {
-        use crate::state::Market;
-        
         match operation {
-            Operation::CreateMarket { question, outcomes } => {
-                let market_id = *self.state.next_market_id.get();
-                let total_shares = vec![0u64; outcomes.len()];
+            Operation::CreateMarket { title, end_time } => {
+                let judge = self.runtime.authenticated_signer().expect("Authentication required");
+                let current_time = self.runtime.system_time().micros();
                 
+                if end_time <= current_time { panic!("End time must be in the future"); }
+
+                let market_id = *self.state.next_market_id.get();
                 let market = Market {
                     id: market_id,
-                    question,
-                    outcomes,
-                    total_shares,
+                    title,
+                    judge,
+                    end_time,
+                    total_pool: 0,
+                    winning_outcome: 0,
                     resolved: false,
-                    winning_outcome: None,
                 };
-                
+
                 self.state.markets.insert(&market_id, market).expect("Failed to insert market");
                 self.state.next_market_id.set(market_id + 1);
             }
-            
-            Operation::BuyShares { market_id, outcome, shares } => {
-                use crate::state::PositionKey;
+
+            Operation::Bet { market_id, outcome, amount } => {
+                let owner = self.runtime.authenticated_signer().expect("Authentication required");
                 
+                if outcome != 0 && outcome != 1 { panic!("Outcome must be 0 or 1"); }
+                if amount == 0 { panic!("Amount must be positive"); }
+
                 let mut market = self.state.markets.get(&market_id)
                     .await
                     .expect("Failed to get market")
                     .expect("Market not found");
-                
-                // Update total shares
-                market.total_shares[outcome] += shares;
+
+                let current_time = self.runtime.system_time().micros();
+                if current_time >= market.end_time { panic!("Market has ended"); }
+                if market.resolved { panic!("Market is resolved"); }
+
+                // bets[marketId][msg.sender][outcome] += msg.value;
+                let bet_key = (market_id, owner, outcome);
+                let current_bet = self.state.bets.get(&bet_key).await.expect("Failed to get bet").unwrap_or(0);
+                self.state.bets.insert(&bet_key, current_bet + amount).expect("Failed to update bet");
+
+                // pool[marketId][outcome] += msg.value;
+                let pool_key = (market_id, outcome);
+                let current_pool = self.state.pool.get(&pool_key).await.expect("Failed to get pool").unwrap_or(0);
+                self.state.pool.insert(&pool_key, current_pool + amount).expect("Failed to update pool");
+
+                // markets[marketId].totalPool += msg.value;
+                market.total_pool += amount;
                 self.state.markets.insert(&market_id, market).expect("Failed to update market");
-                
-                // Update user position - use chain_id as owner identifier
-                let owner = bcs::to_bytes(&self.runtime.chain_id())
-                    .expect("Failed to serialize chain_id");
-                
-                let position_key = PositionKey {
-                    owner,
-                    market_id,
-                    outcome,
-                };
-                
-                let current_shares = self.state.positions.get(&position_key)
-                    .await
-                    .expect("Failed to get shares")
-                    .unwrap_or(0);
-                
-                self.state.positions.insert(&position_key, current_shares + shares)
-                    .expect("Failed to update shares");
             }
-            
-            Operation::ResolveMarket { market_id, winning_outcome } => {
+
+            Operation::Resolve { market_id, winning_outcome } => {
+                let sender = self.runtime.authenticated_signer().expect("Authentication required");
+                
                 let mut market = self.state.markets.get(&market_id)
                     .await
                     .expect("Failed to get market")
                     .expect("Market not found");
-                
+
+                if sender != market.judge { panic!("Only judge can resolve"); }
+                if market.resolved { panic!("Market already resolved"); }
+                if winning_outcome != 0 && winning_outcome != 1 { panic!("Outcome must be 0 or 1"); }
+
+                market.winning_outcome = winning_outcome;
                 market.resolved = true;
-                market.winning_outcome = Some(winning_outcome);
                 self.state.markets.insert(&market_id, market).expect("Failed to resolve market");
             }
+
+            Operation::Claim { market_id } => {
+                let sender = self.runtime.authenticated_signer().expect("Authentication required");
+                
+                let market = self.state.markets.get(&market_id)
+                    .await
+                    .expect("Failed to get market")
+                    .expect("Market not found");
+
+                if !market.resolved { panic!("Market not resolved"); }
+
+                let winning_outcome = market.winning_outcome;
+                let bet_key = (market_id, sender, winning_outcome);
+                let user_bet = self.state.bets.get(&bet_key).await.expect("Failed to get bet").unwrap_or(0);
+
+                if user_bet == 0 { panic!("No bet to claim"); }
+
+                let pool_key = (market_id, winning_outcome);
+                let pool_winning_outcome = self.state.pool.get(&pool_key).await.expect("Failed to get pool").unwrap_or(0);
+
+                // payout = (userBet * m.totalPool) / pool[marketId][m.winningOutcome];
+                // Use u128 to prevent overflow before division
+                let payout = (user_bet as u128 * market.total_pool as u128) / pool_winning_outcome as u128;
+
+                // bets[marketId][msg.sender][m.winningOutcome] = 0;
+                self.state.bets.insert(&bet_key, 0).expect("Failed to reset bet");
+
+                // payable(msg.sender).transfer(payout);
+                // Note: Actual token transfer would require a Fungible Token application or similar mechanism.
+                // For this logic-only port, we calculate the payout.
+            }
         }
+        Self::Response::default()
     }
 
     async fn execute_message(&mut self, _message: Self::Message) {}
 
     async fn store(mut self) {
         self.state.save().await.expect("Failed to save state");
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use futures::FutureExt as _;
-    use linera_sdk::{util::BlockingWait, views::View, Contract, ContractRuntime};
-
-    use prediction_market::Operation;
-
-    use super::{PredictionMarketContract, PredictionMarketState};
-
-    #[test]
-    fn operation() {
-        let initial_value = 10u64;
-        let mut app = create_and_instantiate_app(initial_value);
-
-        let increment = 10u64;
-
-        let _response = app
-            .execute_operation(Operation::Increment { value: increment })
-            .now_or_never()
-            .expect("Execution of application operation should not await anything");
-
-        assert_eq!(*app.state.value.get(), initial_value + increment);
-    }
-
-    fn create_and_instantiate_app(initial_value: u64) -> PredictionMarketContract {
-        let runtime = ContractRuntime::new().with_application_parameters(());
-        let mut contract = PredictionMarketContract {
-            state: PredictionMarketState::load(runtime.root_view_storage_context())
-                .blocking_wait()
-                .expect("Failed to read from mock key value store"),
-            runtime,
-        };
-
-        contract
-            .instantiate(initial_value)
-            .now_or_never()
-            .expect("Initialization of application state should not await anything");
-
-        assert_eq!(*contract.state.value.get(), initial_value);
-
-        contract
     }
 }

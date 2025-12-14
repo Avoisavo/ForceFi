@@ -5,15 +5,17 @@ edition = "2021"
 
 [dependencies]
 async-graphql = { version = "=7.0.17", default-features = false }
-linera-sdk = { path = "/Users/zwavo/linera-protocol/linera-sdk" }
-futures = { version = "0.3 "}
+linera-sdk = "0.15.4"
+linera-views = "0.15.4"
+linera-base = "0.15.4"
+futures = { version = "0.3" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 hex = "0.4"
 bcs = "0.1"
 
 [dev-dependencies]
-linera-sdk = { path = "/Users/zwavo/linera-protocol/linera-sdk", features = ["test", "wasmer"] }
+linera-sdk = { version = "0.15.4", features = ["test", "wasmer"] }
 tokio = { version = "1.40", features = ["rt", "sync"] }
 
 [[bin]]
