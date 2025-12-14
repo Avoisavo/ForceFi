@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMarkets } from '../contexts/MarketContext';
+import { lineraAdapter } from '../lib/linera-adapter';
+import { CONTRACTS_APP_ID } from '../constants';
 
 const NewEvent = () => {
     const navigate = useNavigate();
     const { addMarket } = useMarkets();
     const [step, setStep] = useState(1);
+    const [busy, setBusy] = useState(false);
 
     const [formData, setFormData] = useState({
         opponent: '',
@@ -37,19 +40,41 @@ const NewEvent = () => {
         "https://cryptologos.cc/logos/popcat-popcat-logo.png"
     ];
 
-    const handleSubmit = () => {
-        const randomLogo = MEME_LOGOS[Math.floor(Math.random() * MEME_LOGOS.length)];
-        addMarket({
-            question: formData.title,
-            imageUrl: randomLogo,
-            options: [
-                { name: "YES", odds: 50, color: "#3b82f6" },
-                { name: "NO", odds: 50, color: "#a78bfa" }
-            ],
-            totalPool: parseFloat(formData.betAmount) || 0,
-            endTime: formData.endDate
-        });
-        navigate('/markets');
+    const handleSubmit = async () => {
+        if (busy) return;
+        setBusy(true);
+
+        try {
+            // Ensure application is set
+            if (!lineraAdapter.isApplicationSet()) {
+                await lineraAdapter.setApplication(CONTRACTS_APP_ID);
+            }
+
+            const endTimeMicros = new Date(formData.endDate).getTime() * 1000;
+            const mutation = `mutation { createMarket(title: "${formData.title}", endTime: ${endTimeMicros}) }`;
+
+            await lineraAdapter.mutate(mutation);
+
+            // Optimistic update (optional, but good for UX)
+            const randomLogo = MEME_LOGOS[Math.floor(Math.random() * MEME_LOGOS.length)];
+            addMarket({
+                question: formData.title,
+                imageUrl: randomLogo,
+                options: [
+                    { name: "YES", odds: 50, color: "#3b82f6" },
+                    { name: "NO", odds: 50, color: "#a78bfa" }
+                ],
+                totalPool: parseFloat(formData.betAmount) || 0,
+                endTime: formData.endDate
+            });
+
+            navigate('/markets');
+        } catch (err: any) {
+            console.error("Failed to create market:", err);
+            alert(`Failed to create market: ${err.message || JSON.stringify(err)}`);
+        } finally {
+            setBusy(false);
+        }
     };
 
     const handleBack = () => {
@@ -259,6 +284,7 @@ const NewEvent = () => {
                 <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
                     <button
                         onClick={handleBack}
+                        disabled={busy}
                         style={{
                             flex: 1,
                             padding: '1rem',
@@ -284,19 +310,20 @@ const NewEvent = () => {
                     </button>
                     <button
                         onClick={handleNext}
+                        disabled={busy}
                         style={{
                             flex: 2,
                             padding: '1rem',
-                            background: '#fbbf24',
+                            background: busy ? '#666' : '#fbbf24',
                             color: 'black',
                             border: 'none',
                             borderRadius: '8px',
                             fontSize: '1rem',
                             fontWeight: 'bold',
-                            cursor: 'pointer'
+                            cursor: busy ? 'not-allowed' : 'pointer'
                         }}
                     >
-                        {step === 3 ? 'Create Bet' : 'Next'}
+                        {busy ? 'Creating...' : (step === 3 ? 'Create Bet' : 'Next')}
                     </button>
                 </div>
             </div>
