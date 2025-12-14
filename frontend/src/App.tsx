@@ -160,7 +160,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/markets" element={<Dashboard />} />
         <Route path="/bet" element={<Bet />} />
-        <Route path="/sport" element={<Sport />} />
+        <Route path="/sports" element={<Sport />} />
       </Routes>
     </BrowserRouter>
   );
