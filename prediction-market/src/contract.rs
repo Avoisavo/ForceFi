@@ -41,8 +41,8 @@ impl Contract for PredictionMarketContract {
 
     async fn execute_operation(&mut self, operation: Self::Operation) -> Self::Response {
         match operation {
-            Operation::CreateMarket { title, end_time } => {
-                let judge = self.runtime.authenticated_signer().expect("Authentication required");
+            Operation::CreateMarket { title, opponent, judge, bet_amount, end_time } => {
+                let _creator = self.runtime.authenticated_signer().expect("Authentication required");
                 let current_time = self.runtime.system_time().micros();
                 
                 if end_time <= current_time { panic!("End time must be in the future"); }
@@ -52,6 +52,8 @@ impl Contract for PredictionMarketContract {
                     id: market_id,
                     title,
                     judge,
+                    opponent,
+                    bet_amount,
                     end_time,
                     total_pool: 0,
                     winning_outcome: 0,
@@ -100,7 +102,7 @@ impl Contract for PredictionMarketContract {
                     .expect("Failed to get market")
                     .expect("Market not found");
 
-                if sender != market.judge { panic!("Only judge can resolve"); }
+                if sender.to_string() != market.judge { panic!("Only judge can resolve"); }
                 if market.resolved { panic!("Market already resolved"); }
                 if winning_outcome != 0 && winning_outcome != 1 { panic!("Outcome must be 0 or 1"); }
 
@@ -130,7 +132,7 @@ impl Contract for PredictionMarketContract {
 
                 // payout = (userBet * m.totalPool) / pool[marketId][m.winningOutcome];
                 // Use u128 to prevent overflow before division
-                let payout = (user_bet as u128 * market.total_pool as u128) / pool_winning_outcome as u128;
+                let _payout = (user_bet as u128 * market.total_pool as u128) / pool_winning_outcome as u128;
 
                 // bets[marketId][msg.sender][m.winningOutcome] = 0;
                 self.state.bets.insert(&bet_key, 0).expect("Failed to reset bet");

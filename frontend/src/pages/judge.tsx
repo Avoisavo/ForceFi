@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import forceHero from '../assets/force_hero.png';
+
+
 
 const Judge = () => {
     const navigate = useNavigate();
@@ -18,23 +18,7 @@ const Judge = () => {
             overflow: 'hidden',
             color: 'white'
         }}>
-            {/* Background Image */}
-            <div style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundImage: `url(${forceHero})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                opacity: 0.2,
-                zIndex: 0,
-                pointerEvents: 'none'
-            }} />
-
             <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <Header />
 
                 <div style={{
                     flex: 1,

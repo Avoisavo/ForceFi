@@ -1,6 +1,6 @@
 
 import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
+
 
 const Wannabet = () => {
     const navigate = useNavigate();
@@ -85,29 +85,7 @@ const Wannabet = () => {
         }
     ];
 
-    const newEventButton = (
-        <button
-            style={{
-                padding: '0.5rem 1rem',
-                background: '#a78bfa',
-                color: '#000',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '600',
-                transition: 'all 0.2s',
-                fontSize: '0.875rem'
-            }}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#8b5cf6';
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#a78bfa';
-            }}
-        >
-            + New Event
-        </button>
-    );
+
 
     return (
         <div style={{
@@ -115,7 +93,7 @@ const Wannabet = () => {
             background: '#000',
             fontFamily: "'Inter', sans-serif"
         }}>
-            <Header rightContent={newEventButton} />
+
 
             <div style={{ padding: '2rem', color: 'white' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto' }}>

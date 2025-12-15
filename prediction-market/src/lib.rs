@@ -21,6 +21,9 @@ impl ServiceAbi for PredictionMarketAbi {
 pub enum Operation {
     CreateMarket {
         title: String,
+        opponent: Option<String>,
+        judge: String,
+        bet_amount: u64,
         end_time: u64,
     },
     Bet {

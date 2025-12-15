@@ -51,7 +51,26 @@ const NewEvent = () => {
             }
 
             const endTimeMicros = new Date(formData.endDate).getTime() * 1000;
-            const mutation = `mutation { createMarket(title: "${formData.title}", endTime: ${endTimeMicros}) }`;
+            const betAmount = parseFloat(formData.betAmount) || 0;
+            // Note: In a real app, we'd need to resolve the judge and opponent to Owner IDs.
+            // For this demo, we'll assume the user inputs a valid Owner ID string or we use a placeholder.
+            // Since the contract expects Owner, we need to be careful. 
+            // If the input is not a valid Owner, this mutation will fail.
+            // For now, let's assume the user enters a valid Owner ID for the judge.
+            // If opponent is empty, we pass null (which becomes None in Rust).
+
+            const opponentArg = formData.opponent ? `"${formData.opponent}"` : "null";
+            const judgeArg = `"${formData.judge}"`;
+
+            const mutation = `mutation { 
+                createMarket(
+                    title: "${formData.title}", 
+                    opponent: ${opponentArg}, 
+                    judge: ${judgeArg}, 
+                    betAmount: ${betAmount}, 
+                    endTime: ${endTimeMicros}
+                ) 
+            }`;
 
             await lineraAdapter.mutate(mutation);
 
@@ -64,7 +83,7 @@ const NewEvent = () => {
                     { name: "YES", odds: 50, color: "#3b82f6" },
                     { name: "NO", odds: 50, color: "#a78bfa" }
                 ],
-                totalPool: parseFloat(formData.betAmount) || 0,
+                totalPool: betAmount,
                 endTime: formData.endDate
             });
 

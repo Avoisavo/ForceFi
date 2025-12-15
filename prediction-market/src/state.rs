@@ -8,7 +8,9 @@ use linera_sdk::linera_base_types::AccountOwner as Owner;
 pub struct Market {
     pub id: u64,
     pub title: String,
-    pub judge: Owner,
+    pub judge: String,
+    pub opponent: Option<String>,
+    pub bet_amount: u64,
     pub end_time: u64,
     pub total_pool: u64,
     pub winning_outcome: u64,

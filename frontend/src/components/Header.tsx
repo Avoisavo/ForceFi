@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 import { lineraAdapter } from '../lib/linera-adapter';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
-interface HeaderProps {
-  rightContent?: React.ReactNode;
-}
-
-export default function Header({ rightContent }: HeaderProps) {
+export default function Header() {
   const { primaryWallet, handleLogOut, setShowAuthFlow } = useDynamicContext();
   const [lineraBalance, setLineraBalance] = useState<string>('0.00');
   const [lineraChainId, setLineraChainId] = useState<string>('');
   const [isLineraConnected, setIsLineraConnected] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const connectLinera = async () => {
@@ -109,7 +109,7 @@ export default function Header({ rightContent }: HeaderProps) {
           padding: 0
         }}>
           <li>
-            <a href="/" style={{
+            <Link to="/" style={{
               color: '#94a3b8',
               textDecoration: 'none',
               transition: 'color 0.2s',
@@ -120,37 +120,64 @@ export default function Header({ rightContent }: HeaderProps) {
               onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
             >
               Home
-            </a>
+            </Link>
           </li>
           <li>
-            <a href="/markets" style={{
-              color: 'white',
-              textDecoration: 'none',
-              transition: 'color 0.2s',
-              fontSize: '0.9375rem',
-              fontWeight: '500'
-            }}>
-              Markets
-            </a>
-          </li>
-          <li>
-            <a href="/sports" style={{
-              color: '#94a3b8',
+            <Link to="/markets" style={{
+              color: location.pathname === '/markets' ? 'white' : '#94a3b8',
               textDecoration: 'none',
               transition: 'color 0.2s',
               fontSize: '0.9375rem',
               fontWeight: '500'
             }}
               onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#94a3b8'}
+              onMouseLeave={(e) => e.currentTarget.style.color = location.pathname === '/markets' ? 'white' : '#94a3b8'}
+            >
+              Markets
+            </Link>
+          </li>
+          <li>
+            <Link to="/sports" style={{
+              color: location.pathname.startsWith('/sports') ? 'white' : '#94a3b8',
+              textDecoration: 'none',
+              transition: 'color 0.2s',
+              fontSize: '0.9375rem',
+              fontWeight: '500'
+            }}
+              onMouseEnter={(e) => e.currentTarget.style.color = 'white'}
+              onMouseLeave={(e) => e.currentTarget.style.color = location.pathname.startsWith('/sports') ? 'white' : '#94a3b8'}
             >
               Sports
-            </a>
+            </Link>
           </li>
         </ul>
 
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          {rightContent}
+          {location.pathname === '/markets' && (
+            <button
+              onClick={() => navigate('/new-event')}
+              style={{
+                padding: '0.5rem 1rem',
+                background: '#a78bfa',
+                color: '#000',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                transition: 'all 0.2s',
+                fontSize: '0.875rem'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#8b5cf6';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = '#a78bfa';
+              }}
+            >
+              + New Event
+            </button>
+          )}
+
           {primaryWallet && isLineraConnected ? (
             <div style={{ position: 'relative' }}>
               <button
@@ -179,6 +206,28 @@ export default function Header({ rightContent }: HeaderProps) {
                 }}
               >
                 <span style={{ opacity: 0.7 }}>Connected:</span> {primaryWallet.address.slice(0, 6)}...{primaryWallet.address.slice(-4)}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(primaryWallet.address);
+                    // Optional: Show a toast or tooltip
+                  }}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '0.25rem',
+                    marginLeft: '0.5rem',
+                    color: '#a78bfa',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                  onMouseLeave={(e) => e.currentTarget.style.opacity = '0.8'}
+                  title="Copy Address"
+                >
+                  📋
+                </button>
                 <span style={{ fontSize: '0.75rem', opacity: 0.5, transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
               </button>
 

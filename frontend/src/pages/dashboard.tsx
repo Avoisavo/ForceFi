@@ -1,11 +1,8 @@
-import Header from '../components/Header';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLinera } from '../contexts/LineraContext';
 import { lineraAdapter } from '../lib/linera-adapter';
-import bitcoinLogo from '../assets/bitcoinlogo.png';
-import chainlinkLogo from '../assets/chainlinklogo.png';
-import forceHero from '../assets/force_hero.png';
+
 
 import { useMarkets } from '../contexts/MarketContext';
 
@@ -52,30 +49,7 @@ export default function Dashboard() {
     loadMarketsFromLinera();
   }, [isConnected]);
 
-  const newEventButton = (
-    <button
-      onClick={() => navigate('/new-event')}
-      style={{
-        padding: '0.5rem 1rem',
-        background: '#a78bfa',
-        color: '#000',
-        border: 'none',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        fontWeight: '600',
-        transition: 'all 0.2s',
-        fontSize: '0.875rem'
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = '#8b5cf6';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = '#a78bfa';
-      }}
-    >
-      + New Event
-    </button>
-  );
+
 
   const handleCardClick = (market: any) => {
     console.log('Card clicked:', market.id, market.question);
@@ -94,23 +68,7 @@ export default function Dashboard() {
       position: 'relative',
       overflow: 'hidden'
     }}>
-      {/* Background Image from Landing Page */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundImage: `url(${forceHero})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        opacity: 0.2,
-        zIndex: 0,
-        pointerEvents: 'none'
-      }} />
-
       <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <Header rightContent={newEventButton} />
 
         {/* Hero Section */}
         <div style={{

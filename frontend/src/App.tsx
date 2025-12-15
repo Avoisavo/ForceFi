@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import Dashboard from './pages/dashboard';
 import Bet from './pages/bet';
 import Sport from './pages/sport';
@@ -81,7 +81,7 @@ function HomePage() {
           </h1>
 
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-            <a href="/markets" style={{
+            <Link to="/markets" style={{
               padding: '1.25rem 2.5rem',
               background: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -103,7 +103,7 @@ function HomePage() {
               }}
             >
               Start Building
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -158,6 +158,7 @@ function HomePage() {
 import { MarketProvider } from './contexts/MarketContext';
 import NewEvent from './components/newEvent';
 import Judge from './pages/judge';
+import Layout from './components/Layout';
 
 // ... imports ...
 
@@ -167,13 +168,15 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/markets" element={<Dashboard />} />
-          <Route path="/bet" element={<Bet />} />
-          <Route path="/sports" element={<Sport />} />
-          <Route path="/sports/:eventId" element={<SportMarket />} />
-          <Route path="/wannabet" element={<Wannabet />} />
-          <Route path="/new-event" element={<NewEvent />} />
-          <Route path="/judge" element={<Judge />} />
+          <Route element={<Layout />}>
+            <Route path="/markets" element={<Dashboard />} />
+            <Route path="/bet" element={<Bet />} />
+            <Route path="/sports" element={<Sport />} />
+            <Route path="/sports/:eventId" element={<SportMarket />} />
+            <Route path="/wannabet" element={<Wannabet />} />
+            <Route path="/new-event" element={<NewEvent />} />
+            <Route path="/judge" element={<Judge />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </MarketProvider>

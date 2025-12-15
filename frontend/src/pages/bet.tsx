@@ -1,4 +1,3 @@
-import Header from '../components/Header';
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useLinera } from '../contexts/LineraContext';
@@ -100,7 +99,7 @@ export default function Bet() {
       background: '#0a0b0d',
       fontFamily: "'Inter', sans-serif"
     }}>
-      <Header />
+
 
       {/* Success/Error Messages */}
       {successMessage && (
