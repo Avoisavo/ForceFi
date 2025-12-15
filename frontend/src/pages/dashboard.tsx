@@ -13,7 +13,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { isConnected } = useLinera();
   const { markets } = useMarkets();
-  const { primaryWallet } = useDynamicContext();
+  // const { primaryWallet } = useDynamicContext();
 
   // Unified color palette: Blue (#3b82f6) and Purple (#a78bfa) and White/Gray
   // const PRIMARY_BLUE = "#3b82f6";
@@ -55,9 +55,9 @@ export default function Dashboard() {
 
   const handleCardClick = (market: any) => {
     console.log('Card clicked:', market.id, market.question);
-    if (market.id === 5 || market.question === "Did Alice or Bella finish her project on time?" || market.question === "Will Sarah finish her project on time?") {
-      navigate('/judge');
-    }
+    // if (market.id === 5 || market.question === "Did Alice or Bella finish her project on time?" || market.question === "Will Sarah finish her project on time?") {
+    //   navigate('/judge');
+    // }
   };
 
   return (
@@ -143,26 +143,10 @@ export default function Dashboard() {
                   e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
                 }}>
 
-                {(market.id === 5 || market.question === "Did Alice or Bella finish her project on time?" || market.question === "Will Sarah finish her project on time?") && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    background: '#fbbf24',
-                    color: '#000',
-                    padding: '4px 8px',
-                    borderRadius: '12px',
-                    fontSize: '0.75rem',
-                    fontWeight: '700',
-                    zIndex: 10,
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                  }}>
-                    You are the judge
-                  </div>
-                )}
 
-                {/* Real Judge Indicator & Resolve Button */}
-                {primaryWallet && market.judge && market.judge.toLowerCase() === primaryWallet.address.toLowerCase() && !market.resolved && (
+
+                {/* Real Judge Indicator & Resolve Button - Showing on all active markets as per user request */}
+                {!market.resolved && (
                   <div style={{
                     position: 'absolute',
                     top: '12px',
@@ -232,7 +216,7 @@ export default function Dashboard() {
                     fontWeight: '600',
                     lineHeight: '1.4',
                     flex: 1,
-                    paddingRight: '110px'
+                    paddingRight: '220px'
                   }}>
                     {market.question}
                   </h2>

@@ -9,11 +9,11 @@ interface Market {
     title: string;
     judge: string;
     opponent: string | null;
-    bet_amount: number;
-    end_time: number;
-    image_url: string;
+    betAmount: number;
+    endTime: number;
+    imageUrl: string;
     resolved: boolean;
-    winning_outcome: number;
+    winningOutcome: number;
 }
 
 const ResolvePage = () => {
@@ -40,10 +40,7 @@ const ResolvePage = () => {
                     m.judge.toLowerCase() === primaryWallet.address.toLowerCase() && !m.resolved
                 ).map((m: any) => ({
                     ...m,
-                    bet_amount: m.betAmount,
-                    end_time: m.endTime,
-                    image_url: m.imageUrl,
-                    winning_outcome: m.winningOutcome
+                    // No need to remap if we use camelCase everywhere, assuming query returns camelCase
                 }));
 
                 setMarkets(myJudgeMarkets);
@@ -230,7 +227,7 @@ const ResolveCard = ({ market, onResolve, resolving }: { market: Market, onResol
                         fontWeight: 'bold',
                         color: '#e2e8f0'
                     }}>
-                        🔗 {market.bet_amount} Linera
+                        🔗 {market.betAmount} Linera
                     </div>
                 </div>
 

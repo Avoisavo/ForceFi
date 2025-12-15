@@ -86,7 +86,10 @@ const NewEvent = () => {
                     { name: "NO", odds: 50, color: "#a78bfa" }
                 ],
                 totalPool: betAmount,
-                endTime: formData.endDate
+                endTime: formData.endDate,
+                judge: formData.judge,
+                resolved: false,
+                winningOutcome: -1 // Default for unresolved
             });
 
             navigate('/markets');
