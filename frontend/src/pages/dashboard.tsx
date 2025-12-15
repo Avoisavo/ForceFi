@@ -5,7 +5,7 @@ import { lineraAdapter } from '../lib/linera-adapter';
 
 
 import { useMarkets } from '../contexts/MarketContext';
-import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+
 
 // ... imports ...
 

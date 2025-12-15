@@ -62,10 +62,11 @@ export const MarketProvider = ({ children }: { children: ReactNode }) => {
             const query = `query { markets { id title judge opponent betAmount endTime imageUrl resolved winningOutcome } }`;
             const result = await lineraAdapter.queryApplication<{ markets: any[] }>(query);
 
+            const LOGO_IMAGES = ["/logo/me1.png", "/logo/me2.png", "/logo/me3.png", "/logo/me4.png", "/logo/me5.png"];
             const mappedMarkets: Market[] = result.markets.map((m: any) => ({
                 id: m.id,
                 question: m.title,
-                imageUrl: m.imageUrl || "https://cryptologos.cc/logos/linera-logo.png", // Fallback
+                imageUrl: m.imageUrl || LOGO_IMAGES[m.id % LOGO_IMAGES.length], // Deterministic fallback
                 options: [
                     { name: "YES", odds: 50, color: PRIMARY_BLUE }, // Odds calculation would go here
                     { name: "NO", odds: 50, color: SECONDARY_PURPLE }
