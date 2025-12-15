@@ -41,7 +41,7 @@ impl Contract for PredictionMarketContract {
 
     async fn execute_operation(&mut self, operation: Self::Operation) -> Self::Response {
         match operation {
-            Operation::CreateMarket { title, opponent, judge, bet_amount, end_time } => {
+            Operation::CreateMarket { title, opponent, judge, bet_amount, end_time, image_url } => {
                 let _creator = self.runtime.authenticated_signer().expect("Authentication required");
                 let current_time = self.runtime.system_time().micros();
                 
@@ -55,6 +55,7 @@ impl Contract for PredictionMarketContract {
                     opponent,
                     bet_amount,
                     end_time,
+                    image_url,
                     total_pool: 0,
                     winning_outcome: 0,
                     resolved: false,

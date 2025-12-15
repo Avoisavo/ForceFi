@@ -19,9 +19,9 @@
     "fd319505c119a01465e6c68c09cba47188cc6f4cb2c357ef0f46996d0de4f96a": {
       "chain_id": "fd319505c119a01465e6c68c09cba47188cc6f4cb2c357ef0f46996d0de4f96a",
       "owner": "0xbeb3a0ce19fcbca23ea7d963d5b624332f38d4345f18ec160ad91bb6e7309566",
-      "block_hash": "178e943caa1a202e86e53c346c8fdfdb24226b91c3eb85ed4552cc921784e01d",
-      "timestamp": 1765804614243496,
-      "next_block_height": 7,
+      "block_hash": "340c9de009081642c1bf93ff601f567914c5f5dc886bf7edef8100872ceb7d94",
+      "timestamp": 1765806077033871,
+      "next_block_height": 9,
       "pending_proposal": null
     }
   },

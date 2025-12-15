@@ -12,6 +12,7 @@ pub struct Market {
     pub opponent: Option<String>,
     pub bet_amount: u64,
     pub end_time: u64,
+    pub image_url: String,
     pub total_pool: u64,
     pub winning_outcome: u64,
     pub resolved: bool,

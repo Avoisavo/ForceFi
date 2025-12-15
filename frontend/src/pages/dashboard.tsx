@@ -5,6 +5,7 @@ import { lineraAdapter } from '../lib/linera-adapter';
 
 
 import { useMarkets } from '../contexts/MarketContext';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
 // ... imports ...
 
@@ -12,6 +13,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const { isConnected } = useLinera();
   const { markets } = useMarkets();
+  const { primaryWallet } = useDynamicContext();
 
   // Unified color palette: Blue (#3b82f6) and Purple (#a78bfa) and White/Gray
   // const PRIMARY_BLUE = "#3b82f6";
@@ -156,6 +158,49 @@ export default function Dashboard() {
                     boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                   }}>
                     You are the judge
+                  </div>
+                )}
+
+                {/* Real Judge Indicator & Resolve Button */}
+                {primaryWallet && market.judge && market.judge.toLowerCase() === primaryWallet.address.toLowerCase() && !market.resolved && (
+                  <div style={{
+                    position: 'absolute',
+                    top: '12px',
+                    right: '12px',
+                    zIndex: 10,
+                    display: 'flex',
+                    gap: '0.5rem'
+                  }}>
+                    <div style={{
+                      background: '#fbbf24',
+                      color: '#000',
+                      padding: '4px 8px',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '700',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}>
+                      You are the judge
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate('/resolve');
+                      }}
+                      style={{
+                        background: '#ef4444',
+                        color: 'white',
+                        border: 'none',
+                        padding: '4px 12px',
+                        borderRadius: '12px',
+                        fontSize: '0.75rem',
+                        fontWeight: '700',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                      }}
+                    >
+                      Resolve
+                    </button>
                   </div>
                 )}
 

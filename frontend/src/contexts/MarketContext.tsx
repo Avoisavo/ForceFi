@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import bitcoinLogo from '../assets/bitcoinlogo.png';
-import chainlinkLogo from '../assets/chainlinklogo.png';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { lineraAdapter } from '../lib/linera-adapter';
+import { CONTRACTS_APP_ID } from '../constants';
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
 
 export interface MarketOption {
     name: string;
@@ -15,11 +16,15 @@ export interface Market {
     options: MarketOption[];
     totalPool: number;
     endTime: string;
+    judge: string;
+    resolved: boolean;
+    winningOutcome: number;
 }
 
 interface MarketContextType {
     markets: Market[];
     addMarket: (market: Omit<Market, 'id'>) => void;
+    refreshMarkets: () => Promise<void>;
 }
 
 const MarketContext = createContext<MarketContextType | undefined>(undefined);
@@ -36,161 +41,69 @@ export const useMarkets = () => {
 const PRIMARY_BLUE = "#3b82f6";
 const SECONDARY_PURPLE = "#a78bfa";
 
-const initialMarkets: Market[] = [
-    {
-        id: 1,
-        question: "Will Daniel get A for finals?",
-        imageUrl: "https://cryptologos.cc/logos/pepe-pepe-logo.png",
-        options: [
-            { name: "YES", odds: 45, color: PRIMARY_BLUE },
-            { name: "NO", odds: 55, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 123400,
-        endTime: "Dec 20, 2025"
-    },
-    {
-        id: 2,
-        question: "Will it rain tomorrow?",
-        imageUrl: "https://cryptologos.cc/logos/dogecoin-doge-logo.png",
-        options: [
-            { name: "YES", odds: 80, color: PRIMARY_BLUE },
-            { name: "NO", odds: 20, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 85600,
-        endTime: "Dec 16, 2025"
-    },
-    {
-        id: 3,
-        question: "Will the bus be late?",
-        imageUrl: "https://cryptologos.cc/logos/shiba-inu-shib-logo.png",
-        options: [
-            { name: "YES", odds: 20, color: PRIMARY_BLUE },
-            { name: "NO", odds: 80, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 98900,
-        endTime: "Dec 16, 2025"
-    },
-    {
-        id: 4,
-        question: "Will Joshua go to eat McD today?",
-        imageUrl: "https://cryptologos.cc/logos/bonk-bonk-logo.png",
-        options: [
-            { name: "YES", odds: 60, color: PRIMARY_BLUE },
-            { name: "NO", odds: 40, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 142000,
-        endTime: "Dec 15, 2025"
-    },
-    {
-        id: 5,
-        question: "Did Alice or Bella finish her project on time?",
-        imageUrl: "https://cryptologos.cc/logos/floki-inu-floki-logo.png",
-        options: [
-            { name: "YES", odds: 75, color: PRIMARY_BLUE },
-            { name: "NO", odds: 25, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 134000,
-        endTime: "Dec 18, 2025"
-    },
-    {
-        id: 6,
-        question: "Will the coffee shop run out of croissants?",
-        imageUrl: "https://cryptologos.cc/logos/dogwifhat-wif-logo.png",
-        options: [
-            { name: "YES", odds: 30, color: PRIMARY_BLUE },
-            { name: "NO", odds: 70, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 89000,
-        endTime: "Dec 16, 2025"
-    },
-    {
-        id: 7,
-        question: "Will the gym be crowded at 6 PM?",
-        imageUrl: "https://cryptologos.cc/logos/apecoin-ape-logo.png",
-        options: [
-            { name: "YES", odds: 90, color: PRIMARY_BLUE },
-            { name: "NO", odds: 10, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 112000,
-        endTime: "Dec 15, 2025"
-    },
-    {
-        id: 8,
-        question: "Will my favorite team win the match?",
-        imageUrl: "https://cryptologos.cc/logos/mog-coin-mog-logo.png",
-        options: [
-            { name: "YES", odds: 50, color: PRIMARY_BLUE },
-            { name: "NO", odds: 50, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 156000,
-        endTime: "Dec 17, 2025"
-    },
-    {
-        id: 9,
-        question: "Will the stock market go up today?",
-        imageUrl: "https://cryptologos.cc/logos/brett-brett-logo.png",
-        options: [
-            { name: "YES", odds: 55, color: PRIMARY_BLUE },
-            { name: "NO", odds: 45, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 102300,
-        endTime: "Dec 15, 2025"
-    },
-    {
-        id: 10,
-        question: "Will I wake up before my alarm?",
-        imageUrl: "https://cryptologos.cc/logos/book-of-meme-bome-logo.png",
-        options: [
-            { name: "YES", odds: 10, color: PRIMARY_BLUE },
-            { name: "NO", odds: 90, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 95000,
-        endTime: "Dec 16, 2025"
-    },
-    {
-        id: 11,
-        question: "Will the new movie get a rating above 8.0?",
-        imageUrl: "https://cryptologos.cc/logos/popcat-popcat-logo.png",
-        options: [
-            { name: "YES", odds: 40, color: PRIMARY_BLUE },
-            { name: "NO", odds: 60, color: SECONDARY_PURPLE }
-        ],
-        totalPool: 89000,
-        endTime: "Dec 19, 2025"
-    }
-];
-
 export const MarketProvider = ({ children }: { children: ReactNode }) => {
-    const [markets, setMarkets] = useState<Market[]>(() => {
-        const saved = localStorage.getItem('forcefi_markets');
-        if (saved) {
-            try {
-                return JSON.parse(saved);
-            } catch (e) {
-                console.error('Failed to parse markets from local storage', e);
-            }
-        }
-        return initialMarkets;
-    });
+    const { primaryWallet } = useDynamicContext();
+    const [markets, setMarkets] = useState<Market[]>([]);
 
-    const addMarket = (newMarket: Omit<Market, 'id'>) => {
-        setMarkets(prev => {
-            const updated = [
-                { ...newMarket, id: Math.max(...prev.map(m => m.id), 0) + 1 },
-                ...prev
-            ];
-            localStorage.setItem('forcefi_markets', JSON.stringify(updated));
-            return updated;
-        });
+    const fetchMarkets = async () => {
+        try {
+            if (!lineraAdapter.isApplicationSet()) {
+                // If not connected yet, we might not be able to query if we need auth, 
+                // but for public queries usually we need a chain. 
+                // If the user is not connected, we might skip or try to connect to a default chain if possible.
+                // For now, we rely on the user being connected or the adapter handling it.
+                if (primaryWallet) {
+                    await lineraAdapter.setApplication(CONTRACTS_APP_ID);
+                } else {
+                    return; // Wait for wallet connection
+                }
+            }
+
+            const query = `query { markets { id title judge opponent betAmount endTime imageUrl resolved winningOutcome } }`;
+            const result = await lineraAdapter.queryApplication<{ markets: any[] }>(query);
+
+            const mappedMarkets: Market[] = result.markets.map((m: any) => ({
+                id: m.id,
+                question: m.title,
+                imageUrl: m.imageUrl || "https://cryptologos.cc/logos/linera-logo.png", // Fallback
+                options: [
+                    { name: "YES", odds: 50, color: PRIMARY_BLUE }, // Odds calculation would go here
+                    { name: "NO", odds: 50, color: SECONDARY_PURPLE }
+                ],
+                totalPool: m.betAmount,
+                endTime: new Date(m.endTime / 1000).toLocaleDateString(),
+                judge: m.judge,
+                resolved: m.resolved,
+                winningOutcome: m.winningOutcome
+            }));
+
+            // Sort by ID descending to show newest first
+            setMarkets(mappedMarkets.sort((a, b) => b.id - a.id));
+        } catch (error) {
+            console.error("Failed to fetch markets:", error);
+        }
     };
 
-    // Also sync initial load if it was empty/default to ensure storage is populated
-    React.useEffect(() => {
-        localStorage.setItem('forcefi_markets', JSON.stringify(markets));
-    }, [markets]);
+    useEffect(() => {
+        fetchMarkets();
+
+        // Poll every 10 seconds
+        const interval = setInterval(fetchMarkets, 10000);
+        return () => clearInterval(interval);
+    }, [primaryWallet]);
+
+    const addMarket = (newMarket: Omit<Market, 'id'>) => {
+        // Optimistic update
+        setMarkets(prev => [
+            { ...newMarket, id: Math.max(...prev.map(m => m.id), 0) + 1 },
+            ...prev
+        ]);
+        // The actual contract call happens in newEvent.tsx, which will eventually trigger a refresh
+        setTimeout(fetchMarkets, 2000);
+    };
 
     return (
-        <MarketContext.Provider value={{ markets, addMarket }}>
+        <MarketContext.Provider value={{ markets, addMarket, refreshMarkets: fetchMarkets }}>
             {children}
         </MarketContext.Provider>
     );

@@ -25,6 +25,7 @@ pub enum Operation {
         judge: String,
         bet_amount: u64,
         end_time: u64,
+        image_url: String,
     },
     Bet {
         market_id: u64,

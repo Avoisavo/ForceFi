@@ -15,6 +15,7 @@ const NewEvent = () => {
         judge: '',
         betAmount: '',
         endDate: '',
+        imageUrl: '',
         title: ''
     });
 
@@ -68,14 +69,15 @@ const NewEvent = () => {
                     opponent: ${opponentArg}, 
                     judge: ${judgeArg}, 
                     betAmount: ${betAmount}, 
-                    endTime: ${endTimeMicros}
+                    endTime: ${endTimeMicros},
+                    imageUrl: "${formData.imageUrl}"
                 ) 
             }`;
 
             await lineraAdapter.mutate(mutation);
 
             // Optimistic update (optional, but good for UX)
-            const randomLogo = MEME_LOGOS[Math.floor(Math.random() * MEME_LOGOS.length)];
+            const randomLogo = formData.imageUrl || MEME_LOGOS[Math.floor(Math.random() * MEME_LOGOS.length)];
             addMarket({
                 question: formData.title,
                 imageUrl: randomLogo,
@@ -279,6 +281,24 @@ const NewEvent = () => {
 
                 {step === 3 && (
                     <div>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>Image URL (Optional)</label>
+                            <input
+                                type="text"
+                                value={formData.imageUrl}
+                                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                                placeholder="https://example.com/image.png"
+                                style={{
+                                    width: '100%',
+                                    padding: '1rem',
+                                    background: '#222',
+                                    border: '1px solid #444',
+                                    borderRadius: '8px',
+                                    color: 'white',
+                                    fontSize: '1rem'
+                                }}
+                            />
+                        </div>
                         <div style={{ marginBottom: '1.5rem' }}>
                             <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>What is the bet?</label>
                             <input
