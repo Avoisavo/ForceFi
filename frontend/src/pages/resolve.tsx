@@ -189,62 +189,40 @@ const ResolveCard = ({ market, onResolve, resolving }: { market: Market, onResol
                 {market.title}
             </h2>
 
-            {/* VS Section */}
+            {/* Main Image */}
+            <div style={{
+                width: '100%',
+                height: '200px',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                marginBottom: '1.5rem',
+                border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+                <img
+                    src={market.imageUrl || "https://cryptologos.cc/logos/linera-logo.png"}
+                    alt={market.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+            </div>
+
+            {/* Bet Amount Info */}
             <div style={{
                 display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '2.5rem',
-                padding: '0 1rem'
+                justifyContent: 'center',
+                marginBottom: '2rem'
             }}>
-                {/* Creator (Left) */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{
-                        width: '64px',
-                        height: '64px',
-                        borderRadius: '50%',
-                        background: 'rgba(255,255,255,0.1)',
-                        overflow: 'hidden',
-                        border: '2px solid rgba(255,255,255,0.1)'
-                    }}>
-                        <img src={market.imageUrl || "https://cryptologos.cc/logos/linera-logo.png"} alt="Creator" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
-                    <span style={{ fontWeight: 'bold', color: '#ffffff', fontSize: '1.1rem' }}>Creator</span>
-                    <span style={{ color: '#94a3b8', fontSize: '0.85rem', fontFamily: 'monospace' }}>0x716B...9A81</span>
-                </div>
-
-                {/* VS Badge */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ color: '#94a3b8', fontWeight: 'bold', fontSize: '1.1rem' }}>vs</span>
-                    <div style={{
-                        background: 'rgba(255,255,255,0.05)',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '20px',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontWeight: 'bold',
-                        color: '#e2e8f0'
-                    }}>
-                        🔗 {market.betAmount} Linera
-                    </div>
-                </div>
-
-                {/* Opponent (Right) */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-                    <div style={{
-                        width: '64px',
-                        height: '64px',
-                        borderRadius: '50%',
-                        background: 'rgba(255,255,255,0.1)',
-                        overflow: 'hidden',
-                        border: '2px solid rgba(255,255,255,0.1)'
-                    }}>
-                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem' }}>👤</div>
-                    </div>
-                    <span style={{ fontWeight: 'bold', color: '#ffffff', fontSize: '1.1rem' }}>{market.opponent || 'Open'}</span>
-                    <span style={{ color: '#94a3b8', fontSize: '0.85rem', fontFamily: 'monospace' }}>0x2aEc...A782</span>
+                <div style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    padding: '0.5rem 1rem',
+                    borderRadius: '20px',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    fontWeight: 'bold',
+                    color: '#e2e8f0'
+                }}>
+                    🔗 {market.betAmount} Linera Pool
                 </div>
             </div>
 
@@ -277,9 +255,9 @@ const ResolveCard = ({ market, onResolve, resolving }: { market: Market, onResol
                             color: 'white'
                         }}
                     >
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#333', overflow: 'hidden' }}>
+                        {/* <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#333', overflow: 'hidden' }}>
                             <img src={market.imageUrl} alt="Yes" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        </div>
+                        </div> */}
                         <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>YES</span>
                     </button>
                     <button
@@ -299,7 +277,7 @@ const ResolveCard = ({ market, onResolve, resolving }: { market: Market, onResol
                             color: 'white'
                         }}
                     >
-                        <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>👤</div>
+                        {/* <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#333', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>👤</div> */}
                         <span style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>NO</span>
                     </button>
                 </div>

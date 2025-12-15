@@ -39,4 +39,9 @@ pub enum Operation {
     Claim {
         market_id: u64,
     },
+    SportsBet {
+        event_id: String,
+        outcome: u64,
+        amount: String,
+    },
 }

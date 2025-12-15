@@ -7,13 +7,15 @@ import { lineraAdapter } from '../lib/linera-adapter';
 import { useMarkets } from '../contexts/MarketContext';
 
 
+import { useDynamicContext } from '@dynamic-labs/sdk-react-core';
+
 // ... imports ...
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { isConnected } = useLinera();
   const { markets } = useMarkets();
-  // const { primaryWallet } = useDynamicContext();
+  const { primaryWallet } = useDynamicContext();
 
   // Unified color palette: Blue (#3b82f6) and Purple (#a78bfa) and White/Gray
   // const PRIMARY_BLUE = "#3b82f6";
@@ -145,48 +147,82 @@ export default function Dashboard() {
 
 
 
-                {/* Real Judge Indicator & Resolve Button - Showing on all active markets as per user request */}
-                {!market.resolved && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '12px',
-                    right: '12px',
-                    zIndex: 10,
-                    display: 'flex',
-                    gap: '0.5rem'
-                  }}>
+                {/* Status Indicator for Everyone */}
+                <div style={{
+                  position: 'absolute',
+                  top: '12px',
+                  right: '12px',
+                  zIndex: 10,
+                  display: 'flex',
+                  gap: '0.5rem',
+                  alignItems: 'center'
+                }}>
+                  {/* Resolved Status */}
+                  {market.resolved ? (
                     <div style={{
-                      background: '#fbbf24',
-                      color: '#000',
-                      padding: '4px 8px',
+                      background: '#10b981',
+                      color: '#fff',
+                      padding: '4px 12px',
                       borderRadius: '12px',
                       fontSize: '0.75rem',
                       fontWeight: '700',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.25rem'
                     }}>
-                      You are the judge
+                      <span>✓ Resolved: {market.winningOutcome === 0 ? 'YES' : 'NO'}</span>
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate('/resolve');
-                      }}
-                      style={{
-                        background: '#ef4444',
-                        color: 'white',
-                        border: 'none',
-                        padding: '4px 12px',
+                  ) : (
+                    <div style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: '#aaa',
+                      padding: '4px 12px',
+                      borderRadius: '12px',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      backdropFilter: 'blur(4px)'
+                    }}>
+                      Active
+                    </div>
+                  )}
+
+                  {/* Judge Controls - Only visible to the Judge when not resolved */}
+                  {!market.resolved && primaryWallet?.address === market.judge && (
+                    <>
+                      <div style={{
+                        background: '#fbbf24',
+                        color: '#000',
+                        padding: '4px 8px',
                         borderRadius: '12px',
                         fontSize: '0.75rem',
                         fontWeight: '700',
-                        cursor: 'pointer',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                      }}
-                    >
-                      Resolve
-                    </button>
-                  </div>
-                )}
+                      }}>
+                        You are the judge
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/resolve');
+                        }}
+                        style={{
+                          background: '#ef4444',
+                          color: 'white',
+                          border: 'none',
+                          padding: '4px 12px',
+                          borderRadius: '12px',
+                          fontSize: '0.75rem',
+                          fontWeight: '700',
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                        }}
+                      >
+                        Resolve
+                      </button>
+                    </>
+                  )}
+                </div>
 
                 {/* Header with Image */}
                 <div style={{

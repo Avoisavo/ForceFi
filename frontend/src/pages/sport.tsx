@@ -234,27 +234,35 @@ const Sport = () => {
 
                                     {/* Prediction Bar */}
                                     <div style={{ marginBottom: '1rem' }}>
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            marginBottom: '0.5rem',
-                                            fontSize: '0.875rem',
-                                            fontWeight: '600'
-                                        }}>
-                                            <span style={{ color: '#3b82f6' }}>YES 50%</span>
-                                            <span style={{ color: '#a78bfa' }}>NO 50%</span>
-                                        </div>
-                                        <div style={{
-                                            height: '8px',
-                                            width: '100%',
-                                            background: '#333',
-                                            borderRadius: '4px',
-                                            overflow: 'hidden',
-                                            display: 'flex'
-                                        }}>
-                                            <div style={{ width: '50%', background: '#3b82f6' }} />
-                                            <div style={{ width: '50%', background: '#a78bfa' }} />
-                                        </div>
+                                        {(() => {
+                                            const yes = 30 + (group.event.id * 7 % 41);
+                                            const no = 100 - yes;
+                                            return (
+                                                <>
+                                                    <div style={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        marginBottom: '0.5rem',
+                                                        fontSize: '0.875rem',
+                                                        fontWeight: '600'
+                                                    }}>
+                                                        <span style={{ color: '#3b82f6' }}>YES {yes}%</span>
+                                                        <span style={{ color: '#a78bfa' }}>NO {no}%</span>
+                                                    </div>
+                                                    <div style={{
+                                                        height: '8px',
+                                                        width: '100%',
+                                                        background: '#333',
+                                                        borderRadius: '4px',
+                                                        overflow: 'hidden',
+                                                        display: 'flex'
+                                                    }}>
+                                                        <div style={{ width: `${yes}%`, background: '#3b82f6' }} />
+                                                        <div style={{ width: `${no}%`, background: '#a78bfa' }} />
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
                                     </div>
 
                                     <p style={{ color: '#888', fontSize: '0.875rem' }}>

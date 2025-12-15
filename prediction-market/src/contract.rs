@@ -103,7 +103,7 @@ impl Contract for PredictionMarketContract {
                     .expect("Failed to get market")
                     .expect("Market not found");
 
-                if sender.to_string() != market.judge { panic!("Only judge can resolve"); }
+                if sender.to_string().to_lowercase() != market.judge.to_lowercase() { panic!("Only judge can resolve"); }
                 if market.resolved { panic!("Market already resolved"); }
                 if winning_outcome != 0 && winning_outcome != 1 { panic!("Outcome must be 0 or 1"); }
 
@@ -141,6 +141,17 @@ impl Contract for PredictionMarketContract {
                 // payable(msg.sender).transfer(payout);
                 // Note: Actual token transfer would require a Fungible Token application or similar mechanism.
                 // For this logic-only port, we calculate the payout.
+            }
+
+            Operation::SportsBet { event_id, outcome, amount } => {
+                let _bettor = self.runtime.authenticated_signer().expect("Authentication required");
+                
+                if outcome != 0 && outcome != 1 { panic!("Outcome must be 0 or 1"); }
+                // amount is String, just ignore validation for mock
+                
+                // For now, we just log the bet as requested for the "sign transaction" flow.
+                // In a full implementation, we would store this in state.
+                // The transaction itself serves as the record on-chain.
             }
         }
         Self::Response::default()
