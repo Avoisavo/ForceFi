@@ -147,15 +147,11 @@ export default function Dashboard() {
 
 
 
-                {/* Status Indicator for Everyone */}
+                {/* Top Row: Status Indicator */}
                 <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  zIndex: 10,
                   display: 'flex',
-                  gap: '0.5rem',
-                  alignItems: 'center'
+                  justifyContent: 'flex-end',
+                  marginBottom: '1rem'
                 }}>
                   {/* Resolved Status */}
                   {market.resolved ? (
@@ -189,7 +185,7 @@ export default function Dashboard() {
 
                   {/* Judge Controls - Only visible to the Judge when not resolved */}
                   {!market.resolved && primaryWallet?.address === market.judge && (
-                    <>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginLeft: '0.5rem' }}>
                       <div style={{
                         background: '#fbbf24',
                         color: '#000',
@@ -220,7 +216,7 @@ export default function Dashboard() {
                       >
                         Resolve
                       </button>
-                    </>
+                    </div>
                   )}
                 </div>
 
@@ -251,8 +247,7 @@ export default function Dashboard() {
                     margin: 0,
                     fontWeight: '600',
                     lineHeight: '1.4',
-                    flex: 1,
-                    paddingRight: '220px'
+                    flex: 1
                   }}>
                     {market.question}
                   </h2>

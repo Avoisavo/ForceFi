@@ -1,4 +1,3 @@
-
 # ForceFi ⚡
 
 > A real-time, microchain-based prediction market platform built on Linera blockchain
@@ -8,120 +7,46 @@
 ![Rust](https://img.shields.io/badge/Smart%20Contracts-Rust-orange)
 ![React](https://img.shields.io/badge/Frontend-React-61DAFB)
 
-## 🎯 What it does
+## 🎯 What It Does
+ForceFi is a high-speed prediction market platform that brings social betting to the Linera blockchain. It combines the thrill of skin-in-the-game wagers with the instant finality of microchains. Users can launch their own markets, challenge friends, and define custom terms—wager amount, opponent, and a mutual judge—without worrying about high gas fees. Once a bet is accepted, funds are locked on-chain. When the event ends, the designated judge resolves the outcome with a single click, and the smart contract automatically transfers the pot to the winner.
 
-ForceFi is a real-time, microchain-based prediction market built on Linera that aggregates market data from multiple Web3 platforms into one unified interface. It collects and compares odds, liquidity, and market depth using subgraphs, allowing users to view and interact with diverse markets in real time. 
+## 🔧 The Problem It Solves
+*   **High Gas Fees & Latency**: Traditional blockchain betting is slow and expensive. ForceFi uses Linera's microchains to eliminate gas congestion and ensure instant trade execution.
+*   **Lack of Social Interaction**: Most prediction markets are impersonal. ForceFi enables direct, peer-to-peer social betting with trusted judges.
+*   **Complex User Experience**: We abstract away the blockchain complexity, offering a simple interface for creating and resolving bets.
+*   **Trust & Settlement**: Informal bets often face settlement issues. ForceFi locks funds on-chain, ensuring the winner always gets paid.
 
-Through automated smart contract workflows, users can place bets, track outcomes, and settle results seamlessly. By deploying each bet on its own microchain, ForceFi eliminates gas congestion and ensures scalable, low-latency execution for thousands of parallel markets.
+## 🛠️ Technologies I Used
+*   **Blockchain**: Linera Protocol (Rust SDK, WebAssembly) for microchain-based smart contracts.
+*   **Frontend**: React 19, TypeScript, Vite for a high-performance user interface.
+*   **Authentication**: Dynamic Labs (Ethereum Signer) for seamless wallet connection and user auth.
+*   **Data Integration**: Custom Sports API for aggregating live market data.
+*   **State Management**: `async-graphql` for efficient data querying and Linera Views for scalable on-chain storage.
 
-## 🔧 The problem it solves
+## 🏗️ How We Built It
+We built ForceFi by leveraging Linera's unique microchain architecture. Each market or user interaction can operate on its own lightweight chain, allowing for parallel processing and infinite scalability.
+1.  **Smart Contracts**: We developed Rust-based contracts to handle market creation, betting logic, and judge resolution.
+2.  **Frontend Integration**: The React frontend interacts directly with these contracts via GraphQL, providing real-time updates without page reloads.
+3.  **Social Layer**: We implemented a "Judge" system where a third party is cryptographically authorized to resolve markets, bridging the gap between social trust and on-chain enforcement.
 
-- **Fragmented prediction markets**: Current Web3 prediction markets operate in isolated ecosystems, making it difficult for users to compare odds, liquidity, and market conditions across platforms.
+## 🌊 Wave 4 Development: Smart Contract Enhancements
+In this wave, we significantly upgraded the smart contract capabilities to support user-generated markets:
+*   **Dynamic Market Creation**: Users can now deploy new market instances with custom parameters (Title, Opponent, Wager, Judge) directly from the UI.
+*   **Judge Authority**: Implemented a permissioned resolution logic where only the designated wallet address (Judge) can trigger the `Resolve` operation.
+*   **Secure Fund Locking**: Enhanced the `Bet` and `Claim` operations to ensure funds are securely held in the contract until resolution, then trustlessly distributed to the winner.
 
-- **High gas fees and latency**: Existing systems that rely on shared global chains suffer from congestion, slow confirmations, and expensive gas costs for every bet or market resolution.
+## 🚀 What's Next for Wave 5
+*   **AI-Driven Odds**: Integrating AI agents to provide real-time odds and market insights.
+*   **Mobile Integration**: Launching a mobile-first interface for betting on the go.
+*   **Decentralized Dispute Resolution**: Expanding the judge system to include community voting or oracle-based resolution for public markets.
 
-- **Lack of real-time execution**: Users cannot interact with prediction markets in real time, and settlement processes often involve delays or manual verification steps.
+## 🔮 Long-Term Vision
+ForceFi aims to become the global liquidity layer for social and event-based wagering. We envision a future where anyone can spin up a prediction market for any event—from global sports to local friendly wagers—with zero friction, instant settlement, and complete transparency. We want to make on-chain betting as fast, fair, and social as sending a text message.
 
-- **Limited interoperability**: Cross-platform liquidity and data aggregation are difficult to achieve without a unified infrastructure that supports seamless communication between markets.
-
-## 🛠️ Technologies Used
-
-### Blockchain & Smart Contracts
-- **Linera**: Microchain infrastructure for parallelized and scalable market deployment
-- **Rust**: Smart contract development language with Linera SDK
-- **WebAssembly**: Compilation target for on-chain execution
-- **GraphQL**: Query layer for application state and data retrieval
-- **BCS**: Binary serialization format for contract operations
-
-### Frontend
-- **React 19**: Modern UI library for interactive user interfaces
-- **TypeScript**: Type-safe frontend development
-- **Vite**: Lightning-fast build tool and dev server
-- **React Router**: Client-side routing and navigation
-- **Dynamic Labs**: Wallet connectivity and user authentication
-
-### Data & Integration
-- **async-graphql**: GraphQL server implementation for service queries
-- **Subgraphs**: Aggregating markets, liquidity, and odds across platforms
-
-## 🔌 Linera SDK & Protocol Features
-
-### State Management (Views)
-- **`RegisterView<u64>`**: Stores market ID counter
-- **`MapView<u64, Market>`**: Stores all prediction markets
-- **`MapView<PositionKey, u64>`**: Tracks user positions across markets
-- **`RootView`**: Automatic state persistence and loading
-
-```rust
-#[derive(RootView)]
-pub struct PredictionMarketState {
-    pub next_market_id: RegisterView<u64>,
-    pub markets: MapView<u64, Market>,
-    pub positions: MapView<PositionKey, u64>,
-}
-```
-
-### Contract Operations
-```rust
-#[derive(GraphQLMutationRoot)]
-pub enum Operation {
-    CreateMarket { question: String, outcomes: Vec<String> },
-    BuyShares { market_id: u64, outcome: usize, shares: u64 },
-    ResolveMarket { market_id: u64, winning_outcome: usize },
-}
-```
-
-### Key SDK Features Used
-- **Contract/Service Separation**: Contract handles state mutations, Service provides GraphQL queries
-- **BCS Serialization**: Binary encoding for operations and chain identity
-- **Runtime Context**: `runtime.chain_id()` for user identification, `runtime.application_parameters()` for validation
-- **async-graphql**: Native GraphQL support via `GraphQLMutationRoot` derive macro
-
-### Linera Benefits
-- Microchain-per-market isolation for parallel execution
-- No gas congestion or variable fees
-- Instant finality for bet placement and resolution
-- Gas-free GraphQL queries
-
-## 🏗️ How we built it
-
-1. **Architecture design**: Defined the microchain-per-bet architecture to isolate each market for independent execution and scaling.
-
-2. **Factory contract**: Implemented a Rust-based contract that dynamically deploys microchains for each new market instance.
-
-3. **Subgraph integration**: Built subgraphs to aggregate data from external prediction markets and provide unified odds and liquidity feeds.
-
-4. **Automated workflow**: Developed secure smart contract workflows for bet placement, execution, and settlement using Linera SDK.
-
-5. **Frontend development**: Built an interactive dashboard displaying live odds, market data, and real-time resolution updates with React and TypeScript.
-
-## 🚧 Challenges We Ran Into
-
-- **Factory contract scalability**: Designing a scalable factory contract to handle thousands of parallel microchains for different bets.
-
-- **Cross-microchain messaging**: Managing communication between microchains for features like leaderboards, aggregated liquidity, and global analytics.
-
-- **Oracle synchronization**: Ensuring consistent and low-latency oracle data updates across markets to prevent mismatched results or delayed resolutions.
-
-## 📚 What we learned
-
-- **Microchain scaling**: Linera's architecture allows true horizontal scaling, with each market operating independently without impacting others.
-
-- **Cross-chain interoperability**: Managing shared state and data across microchains requires new design paradigms compared to traditional monolithic contracts.
-
-- **Real-time performance**: Building near-instant settlement and odds updates requires tightly optimized messaging and oracle integration.
-
-## 🚀 What's next
-
-- **Expand market coverage**: Integrate more Web3 prediction platforms and subgraphs for broader data aggregation.
-
-- **AI-driven odds engine**: Introduce algorithmic market making and real-time odds optimization using AI models.
-
-- **Decentralized dispute resolution**: Implement a trustless, community-driven verification system for market outcomes.
-
-- **Mobile integration**: Launch a lightweight mobile interface for real-time bet tracking and instant notifications.
-
-- **Public testnet deployment**: Deploy ForceFi on Linera testnet for community testing and performance benchmarking.
+## 🚧 Technical Challenges Overcome
+*   **Microchain State Management**: Mastering Linera's `View` system to handle state across multiple microchains efficiently.
+*   **Judge Authentication**: Ensuring that only the specific judge address could resolve a market, preventing unauthorized settlements.
+*   **Real-Time Synchronization**: Syncing on-chain state (bets, resolutions) with the frontend in real-time to provide a "web2-like" snappy experience.
 
 ## 📦 Project Structure
 
@@ -189,7 +114,6 @@ linera publish-and-create \
   target/wasm32-unknown-unknown/release/prediction_market_{contract,service}.wasm \
   --json-argument "initial_config"
 ```
-
 
 ## 👥 Team
 
