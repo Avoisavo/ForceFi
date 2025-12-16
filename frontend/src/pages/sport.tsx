@@ -87,7 +87,7 @@ const Sport = () => {
             });
 
             xhr.open('GET', 'https://sportapi7.p.rapidapi.com/api/v1/player/817181/unique-tournament/132/season/65360/ratings');
-            xhr.setRequestHeader('x-rapidapi-key', '6edb283a6cmshee06689689cfd50p13b4c8jsnf64bdb417da6');
+            xhr.setRequestHeader('x-rapidapi-key', '0a7e774b90mshe4032d7225fd6a3p10ba76jsn5cbeb1146f2d');
             xhr.setRequestHeader('x-rapidapi-host', 'sportapi7.p.rapidapi.com');
 
             xhr.send(null);
